@@ -3,13 +3,13 @@ spring:
     name: resonance
 
   datasource:
-    url: jdbc:h2:file:/data/resonance
-    username: sa
+    url: jdbc:postgresql://localhost:5432/resonance
+    username: res
     password: pass
-    driver-class-name: org.h2.Driver
+    driver-class-name: org.postgresql.Driver
 
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
     show-sql: true
