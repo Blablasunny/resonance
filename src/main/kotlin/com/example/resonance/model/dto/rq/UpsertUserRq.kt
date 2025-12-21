@@ -1,0 +1,12 @@
+package com.example.resonance.model.dto.rq
+
+import com.example.resonance.database.entity.UserType
+import java.util.UUID
+
+data class UpsertUserRq(
+    val userId: UUID,
+    val userType: UserType,
+    val isActive: Boolean = true,
+    val email: String,
+    val password: String,
+)

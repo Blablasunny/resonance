@@ -1,0 +1,20 @@
+package com.example.resonance.service.impl
+
+import com.example.resonance.database.dao.StudentDao
+import com.example.resonance.model.dto.rq.UpsertStudentRq
+import com.example.resonance.model.dto.rs.StudentDto
+import com.example.resonance.model.mapper.toDto
+import com.example.resonance.model.mapper.toEntity
+import com.example.resonance.service.StudentService
+import org.springframework.stereotype.Service
+
+@Service
+class StudentServiceImpl(
+    private val studentDao : StudentDao
+): StudentService {
+    override fun getStudents(): List<StudentDto> =
+        studentDao.findAll().map { it.toDto() }
+
+    override fun createStudent(rq: UpsertStudentRq): StudentDto =
+        studentDao.save(rq.toEntity()).toDto()
+}
