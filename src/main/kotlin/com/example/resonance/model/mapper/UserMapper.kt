@@ -6,7 +6,7 @@ import com.example.resonance.model.dto.rs.UserDto
 
 fun UserEntity.toDto() = UserDto(
     id = id,
-    userId = userId,
+    student  = student.toDto(),
     userType = userType,
     isActive = isActive,
     email = email,
@@ -16,7 +16,6 @@ fun UserEntity.toDto() = UserDto(
 )
 
 fun UpsertUserRq.toEntity() = UserEntity(
-    userId = userId,
     userType = userType,
     isActive = isActive,
     email = email,

@@ -1,12 +1,15 @@
 package com.example.resonance.service.impl
 
 import com.example.resonance.database.dao.StudentDao
+import com.example.resonance.database.entity.Student
 import com.example.resonance.model.dto.rq.UpsertStudentRq
 import com.example.resonance.model.dto.rs.StudentDto
 import com.example.resonance.model.mapper.toDto
 import com.example.resonance.model.mapper.toEntity
 import com.example.resonance.service.StudentService
 import org.springframework.stereotype.Service
+import java.util.UUID
+import kotlin.jvm.optionals.getOrElse
 
 @Service
 class StudentServiceImpl(
@@ -17,4 +20,7 @@ class StudentServiceImpl(
 
     override fun createStudent(rq: UpsertStudentRq): StudentDto =
         studentDao.save(rq.toEntity()).toDto()
+
+    override fun getStudent(id: UUID): Student =
+        studentDao.findById(id).getOrElse { throw RuntimeException("") }
 }

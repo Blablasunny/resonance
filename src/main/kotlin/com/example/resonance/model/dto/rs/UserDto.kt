@@ -6,7 +6,7 @@ import java.util.UUID
 
 data class UserDto (
     val id: UUID?,
-    val userId: UUID,
+    val student: StudentDto,
     val userType: UserType,
     val isActive: Boolean = true,
     val email: String,
