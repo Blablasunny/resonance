@@ -1,12 +1,12 @@
 package com.example.resonance.model.mapper
 
 import com.example.resonance.database.entity.UserEntity
-import com.example.resonance.model.dto.rq.UpsertUserRq
-import com.example.resonance.model.dto.rs.UserDto
+import com.example.resonance.model.schema.request.UpsertUserRq
+import com.example.resonance.model.schema.dto.UserDto
 
 fun UserEntity.toDto() = UserDto(
     id = id,
-    student  = student.toDto(),
+    userId = userId,
     userType = userType,
     isActive = isActive,
     email = email,

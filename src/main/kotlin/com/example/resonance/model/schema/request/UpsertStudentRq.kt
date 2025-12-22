@@ -1,4 +1,4 @@
-package com.example.resonance.model.dto.rq
+package com.example.resonance.model.schema.request
 
 import com.example.resonance.database.entity.Gender
 import com.example.resonance.database.entity.ProfessionGrade

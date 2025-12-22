@@ -4,9 +4,8 @@ import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
-import jakarta.persistence.JoinColumn
-import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
+import java.util.UUID
 
 @Entity
 @Table(name = "user_entity")
@@ -21,11 +20,11 @@ data class UserEntity (
     @Column(name = "password", nullable = false)
     val password: String,
 ) : AbstractEntity() {
-    @OneToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    lateinit var student: Student
+    @Column(name = "user_id", nullable = false)
+    lateinit var userId: UUID
 }
 
 enum class UserType {
     STUDENT, COMPANY
 }
+

@@ -1,7 +1,7 @@
 package com.example.resonance.controller
 
-import com.example.resonance.model.dto.rq.UpsertStudentRq
-import com.example.resonance.model.dto.rs.StudentDto
+import com.example.resonance.model.schema.request.UpsertStudentRq
+import com.example.resonance.model.schema.dto.StudentDto
 import com.example.resonance.service.StudentService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping

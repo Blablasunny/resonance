@@ -1,4 +1,4 @@
-package com.example.resonance.model.dto.rs
+package com.example.resonance.model.schema.dto
 
 import com.example.resonance.database.entity.Gender
 import com.example.resonance.database.entity.ProfessionGrade
