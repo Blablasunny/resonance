@@ -10,19 +10,22 @@ import com.example.resonance.model.mapper.toEntity
 import com.example.resonance.service.CompanyService
 import com.example.resonance.service.StudentService
 import com.example.resonance.service.UserService
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
 @Service
 class UserServiceImpl(
     private val userDao: UserDao,
     private val studentService: StudentService,
-    private val companyService: CompanyService
+    private val companyService: CompanyService,
+    private val passwordEncoder: PasswordEncoder
 ): UserService {
     override fun getUsers(): List<UserDto> =
         userDao.findAll().map { it.toDto() }
 
     override fun createUser(rq: UpsertUserRq): UserDto {
-        val user = rq.toEntity()
+        val encryptedPassword = passwordEncoder.encode(rq.getPasswordOrThrow())
+        val user = rq.copy(password = encryptedPassword).toEntity()
         return userDao.save(modifyUser(user, rq)).toDto()
     }
 

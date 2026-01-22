@@ -16,8 +16,9 @@ fun UserEntity.toDto() = UserDto(
 )
 
 fun UpsertUserRq.toEntity() = UserEntity(
+    userId = userId,
     userType = userType,
     isActive = isActive,
     email = email,
-    password = password,
+    password = getPasswordOrThrow(),
 )

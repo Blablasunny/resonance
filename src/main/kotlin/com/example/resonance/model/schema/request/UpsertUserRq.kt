@@ -8,5 +8,9 @@ data class UpsertUserRq(
     val userType: UserType,
     val isActive: Boolean = true,
     val email: String,
-    val password: String,
-)
+    val password: String? = null
+) {
+    fun getPasswordOrThrow(): String {
+        return password ?: throw IllegalArgumentException("Password is required")
+    }
+}
