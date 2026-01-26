@@ -17,6 +17,6 @@ class CompanyController(
     @GetMapping
     fun getCompanies(): List<CompanyDto> = service.getCompanies()
 
-    @PostMapping
-    fun create(@RequestBody rq: UpsertCompanyRq) = service.createCompany(rq)
+//    @PostMapping
+//    fun create(@RequestBody rq: UpsertCompanyRq) = service.createCompany(rq)
 }

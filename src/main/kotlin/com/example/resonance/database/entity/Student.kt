@@ -1,9 +1,14 @@
 package com.example.resonance.database.entity
 
+import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
+import jakarta.persistence.FetchType
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.JoinTable
+import jakarta.persistence.ManyToMany
 import jakarta.persistence.Table
 import java.time.LocalDate
 
@@ -26,7 +31,10 @@ data class Student(
     @Enumerated(EnumType.STRING)
     @Column(name = "profession_grade", nullable = false)
     val professionGrade: ProfessionGrade
-) : AbstractEntity()
+) : AbstractEntity() {
+    @ManyToMany(mappedBy = "students")
+    var educations: MutableSet<Education> = mutableSetOf()
+}
 
 enum class Gender {
     FEMALE, MALE

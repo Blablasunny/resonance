@@ -9,14 +9,14 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
-@RestController
-@RequestMapping("/users")
-class UserController(
-    private val service: UserService
-) {
-    @GetMapping
-    fun getUsers(): List<UserDto> = service.getUsers()
-
-    @PostMapping
-    fun createUser(@RequestBody rq: UpsertUserRq) = service.createUser(rq)
-}
+//@RestController
+//@RequestMapping("/users")
+//class UserController(
+//    private val service: UserService
+//) {
+//    @GetMapping
+//    fun getUsers(): List<UserDto> = service.getUsers()
+//
+//    @PostMapping
+//    fun createUser(@RequestBody rq: UpsertUserRq) = service.createUser(rq)
+//}
