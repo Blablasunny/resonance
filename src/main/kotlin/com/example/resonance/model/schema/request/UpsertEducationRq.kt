@@ -7,6 +7,5 @@ data class UpsertEducationRq(
     val institutionName : String,
     val educationLevel: EducationLevel,
     val speciality: String,
-    val status: Boolean = true,
-    val studentIds: List<UUID>
+    val isFinished: Boolean = true,
 )

@@ -1,22 +1,19 @@
 package com.example.resonance.controller
 
-import com.example.resonance.model.schema.request.UpsertUserRq
+import com.example.resonance.model.mapper.toDto
 import com.example.resonance.model.schema.dto.UserDto
 import com.example.resonance.service.UserService
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.util.UUID
 
-//@RestController
-//@RequestMapping("/users")
-//class UserController(
-//    private val service: UserService
-//) {
-//    @GetMapping
-//    fun getUsers(): List<UserDto> = service.getUsers()
-//
-//    @PostMapping
-//    fun createUser(@RequestBody rq: UpsertUserRq) = service.createUser(rq)
-//}
+@RestController
+@RequestMapping("/users")
+class UserController(
+    val userService: UserService,
+) {
+    @GetMapping
+    fun getUsers(): List<String> = userService.getUsers()
+}

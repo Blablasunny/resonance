@@ -1,5 +1,6 @@
 package com.example.resonance.service.implement
 
+import com.example.resonance.database.dao.CompanyDao
 import com.example.resonance.database.dao.StudentDao
 import com.example.resonance.database.dao.UserDao
 import com.example.resonance.database.entity.UserEntity
@@ -26,7 +27,8 @@ class AuthServiceImpl(
     private val companyService: CompanyService,
     private val passwordEncoder: PasswordEncoder,
     private val jwtUtil: JwtUtil,
-    private val studentDao: StudentDao
+    private val studentDao: StudentDao,
+    private val companyDao: CompanyDao
 ): AuthService {
 
     override fun authenticate(request: UpsertAuthRq): AuthDto {
@@ -111,6 +113,9 @@ class AuthServiceImpl(
             }
             UserType.COMPANY -> {
                 val companyRq = request.companyData!!
+                if (companyRq.toEntity() in companyDao.findAll()) {
+                    throw IllegalArgumentException("This company data is already registered")
+                }
                 val company = companyService.createCompany(companyRq)
                 Pair(company.id!!, company)
             }

@@ -9,6 +9,8 @@ import java.util.UUID
 
 interface StudentService {
     fun getStudents() : List<StudentDto>
-    fun createStudent(rq: UpsertStudentRq): StudentDto
     fun getStudent(id : UUID) : Student
+    fun createStudent(rq: UpsertStudentRq): StudentDto
+    fun updateStudent(id: UUID, rq: UpsertStudentRq): StudentDto
+    fun deleteStudent(id : UUID)
 }

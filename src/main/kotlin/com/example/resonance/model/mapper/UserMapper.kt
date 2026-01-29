@@ -22,3 +22,8 @@ fun UpsertUserRq.toEntity() = UserEntity(
     email = email,
     password = getPasswordOrThrow(),
 )
+
+fun UserEntity.updateEmail(newEmail: String): UserEntity =
+    this.apply {
+        email = newEmail
+    }

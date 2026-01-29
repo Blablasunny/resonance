@@ -16,21 +16,21 @@ import java.time.LocalDate
 @Table(name = "student")
 data class Student(
     @Column(name = "first_name", nullable = false)
-    val firstName: String,
+    var firstName: String,
     @Column(name = "last_name", nullable = false)
-    val lastName: String,
+    var lastName: String,
     @Column(name = "middle_name")
-    val middleName: String? = null,
+    var middleName: String? = null,
     @Enumerated(EnumType.STRING)
     @Column(name = "gender", nullable = false)
-    val gender: Gender,
+    var gender: Gender,
     @Column(name = "birth_date", nullable = false)
-    val birthDate: LocalDate,
+    var birthDate: LocalDate,
     @Column(name = "citizenship", nullable = false)
-    val citizenship: String,
+    var citizenship: String,
     @Enumerated(EnumType.STRING)
     @Column(name = "profession_grade", nullable = false)
-    val professionGrade: ProfessionGrade
+    var professionGrade: ProfessionGrade
 ) : AbstractEntity() {
     @ManyToMany(mappedBy = "students")
     var educations: MutableSet<Education> = mutableSetOf()

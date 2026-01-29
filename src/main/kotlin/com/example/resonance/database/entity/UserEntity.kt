@@ -18,7 +18,7 @@ data class UserEntity (
     @Column(name = "is_active", nullable = false)
     val isActive: Boolean = true,
     @Column(name = "email", nullable = false, unique = true)
-    val email: String,
+    var email: String,
     @Column(name = "password", nullable = false)
     val password: String,
 ) : AbstractEntity()

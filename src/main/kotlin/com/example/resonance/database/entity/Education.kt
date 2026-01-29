@@ -20,7 +20,7 @@ data class Education(
     @Column(name = "speciality", nullable = false)
     var speciality: String,
     @Column(name = "status", nullable = false)
-    var status: Boolean = true,
+    var isFinished: Boolean = true,
 ) : AbstractEntity() {
     @ManyToMany
     @JoinTable(

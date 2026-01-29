@@ -2,10 +2,9 @@ package com.example.resonance.controller
 
 import com.example.resonance.database.dao.StudentDao
 import com.example.resonance.model.mapper.toDto
-import com.example.resonance.model.schema.dto.EducationDto
-import com.example.resonance.model.schema.request.UpsertStudentRq
 import com.example.resonance.model.schema.dto.StudentDto
 import com.example.resonance.model.schema.request.UpsertEducationRq
+import com.example.resonance.model.schema.request.UpsertStudentRq
 import com.example.resonance.service.EducationService
 import com.example.resonance.service.StudentService
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -20,31 +19,36 @@ import java.util.UUID
 @RestController
 @RequestMapping("/students")
 class StudentController(
-    private val service: StudentService,
+    private val studentService: StudentService,
     private val educationService: EducationService,
-    private val studentDao: StudentDao
 ) {
     @GetMapping
-    fun getStudents(): List<StudentDto> = service.getStudents()
-
-//    @PostMapping
-//    fun createStudent(@RequestBody rq: UpsertStudentRq) = service.createStudent(rq)
+    fun getStudents(): List<StudentDto> = studentService.getStudents()
 
     @GetMapping("/{id}")
-    fun getStudent(@PathVariable("id") id: UUID) = service.getStudent(id).toDto()
+    fun getStudent(@PathVariable("id") id: UUID) = studentService.getStudent(id).toDto()
+
+    @PostMapping("/{id}")
+    fun updateStudent(@PathVariable("id") id: UUID, @RequestBody rq: UpsertStudentRq) =
+        studentService.updateStudent(id, rq)
+
+    @DeleteMapping("/{id}")
+    fun deleteStudent(@PathVariable("id") id: UUID) = studentService.deleteStudent(id)
+
 
     @GetMapping("/educations/{studentId}")
     fun getEducationByStudentId(@PathVariable("studentId") studentId: UUID) =
         educationService.getEducationsByStudentId(studentId)
 
-    @PostMapping("/educations")
-    fun createEducation(@RequestBody rq: UpsertEducationRq) =
-        educationService.createEducation(rq)
+    @PostMapping("/educations/{studentId}")
+    fun addEducation(@PathVariable("studentId") studentId: UUID, @RequestBody rq: UpsertEducationRq) =
+        educationService.addEducation(studentId, rq)
 
-    @PostMapping("/educations/{id}")
-    fun createEducation(@PathVariable("id") id: UUID, @RequestBody rq: UpsertEducationRq) =
-        educationService.updateEducation(id, rq)
+    @PostMapping("/educations/{studentId}/{id}")
+    fun updateEducation(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID, @RequestBody rq: UpsertEducationRq) =
+        educationService.changeEducation(id, rq, studentId)
 
-    @DeleteMapping("/educations/{id}")
-    fun deleteEducation(@PathVariable("id") id: UUID) = educationService.deleteEducation(id)
+    @DeleteMapping("/educations/{studentId}/{id}")
+    fun deleteEducation(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID) =
+        educationService.delEducation(id, studentId)
 }

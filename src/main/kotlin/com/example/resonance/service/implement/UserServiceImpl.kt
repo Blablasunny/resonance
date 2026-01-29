@@ -7,11 +7,14 @@ import com.example.resonance.model.schema.request.UpsertUserRq
 import com.example.resonance.model.schema.dto.UserDto
 import com.example.resonance.model.mapper.toDto
 import com.example.resonance.model.mapper.toEntity
+import com.example.resonance.model.mapper.updateEmail
 import com.example.resonance.service.CompanyService
 import com.example.resonance.service.StudentService
 import com.example.resonance.service.UserService
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import java.util.UUID
+import kotlin.jvm.optionals.getOrElse
 
 @Service
 class UserServiceImpl(
@@ -20,8 +23,25 @@ class UserServiceImpl(
     private val companyService: CompanyService,
     private val passwordEncoder: PasswordEncoder
 ): UserService {
-    override fun getUsers(): List<UserDto> =
-        userDao.findAll().map { it.toDto() }
+    override fun getUsers(): List<String> =
+        userDao.findAll().map { it.email }
+
+    override fun getUser(id: UUID): UserEntity =
+        userDao.findById(id).getOrElse { throw RuntimeException("User with id $id not found") }
+
+    override fun getEmail(id: UUID): String {
+        if (userDao.existsById(id)) return userDao.findProtectionById(id)!!.getEmail()
+        else throw RuntimeException("User with id $id not found")
+    }
+
+    override fun updateEmail(id: UUID, email: String): String {
+        if (userDao.findByEmail(email) != null) {
+            throw RuntimeException("User with email $email already exists")
+        }
+        val user = getUser(id)
+        userDao.save(user.updateEmail(email))
+        return userDao.findProtectionById(id)!!.getEmail()
+    }
 
     override fun createUser(rq: UpsertUserRq): UserDto {
         val encryptedPassword = passwordEncoder.encode(rq.getPasswordOrThrow())

@@ -9,14 +9,14 @@ import jakarta.persistence.Table
 @Table(name = "company")
 data class Company (
     @Column(name = "company_name", nullable = false)
-    val companyName : String,
+    var companyName : String,
     @Lob
     @Column(name = "company_description", nullable = false)
-    val companyDescription : String,
+    var companyDescription : String,
     @Column(name = "industry", nullable = false)
-    val industry: String,
+    var industry: String,
     @Column(name = "website_link", nullable = false)
-    val websiteLink : String,
+    var websiteLink : String,
     @Column(name = "career_page_link", nullable = false)
-    val careerPageLink : String,
+    var careerPageLink : String,
 ) : AbstractEntity()
