@@ -26,29 +26,8 @@ class EducationServiceImpl(
     private val studentDao: StudentDao,
     private val studentService: StudentService,
 ): EducationService {
-    override fun createEducation(rq: UpsertEducationRq, studentId: UUID): EducationDto {
-        val education = rq.toEntity()
-        return educationDao.save(modifyEducation(rq, education, studentId)).toDto()
-    }
-
     override fun getEducationsByStudentId(studentId: UUID): List<EducationDto> =
         educationDao.findEducationsByStudents(studentDao.findById(studentId)).map { it.toDto() }
-
-    override fun updateEducation(
-        id: UUID,
-        rq: UpsertEducationRq,
-        studentId: UUID
-    ): EducationDto {
-        val education = getEducation(id).update(rq)
-        return educationDao.save(modifyEducation(rq, education, studentId)).toDto()
-    }
-
-    override fun deleteEducation(id: UUID) {
-        if (!educationDao.existsById(id)) {
-            throw RuntimeException("Education with id $id not found")
-        }
-        educationDao.deleteById(id)
-    }
 
     override fun getEducation(id: UUID) =
         educationDao.findById(id).getOrElse { throw RuntimeException("Education with id $id not found") }
@@ -93,12 +72,25 @@ class EducationServiceImpl(
         education.students.remove(student)
     }
 
+    private fun createEducation(rq: UpsertEducationRq, studentId: UUID): EducationDto {
+        val education = rq.toEntity()
+        return educationDao.save(modifyEducation(rq, education, studentId)).toDto()
+    }
+
+    private fun updateEducation(
+        id: UUID,
+        rq: UpsertEducationRq,
+        studentId: UUID
+    ): EducationDto {
+        val education = getEducation(id).update(rq)
+        return educationDao.save(modifyEducation(rq, education, studentId)).toDto()
+    }
+
     private fun modifyEducation(rq: UpsertEducationRq, education: Education, studentId: UUID): Education {
         if (studentId !in education.students.map { it.id }) {
             val student = studentService.getStudent(studentId)
             education.students.add(student)
             student.educations.add(education)
-            //studentDao.save(student)
         }
         return education
     }

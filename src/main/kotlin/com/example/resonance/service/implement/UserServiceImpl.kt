@@ -8,9 +8,15 @@ import com.example.resonance.model.schema.dto.UserDto
 import com.example.resonance.model.mapper.toDto
 import com.example.resonance.model.mapper.toEntity
 import com.example.resonance.model.mapper.updateEmail
+import com.example.resonance.model.mapper.updatePassword
+import com.example.resonance.model.schema.dto.UpdateEmailDto
+import com.example.resonance.model.schema.request.UpdateEmailRq
+import com.example.resonance.model.schema.request.UpdatePasswordRq
+import com.example.resonance.security.JwtUtil
 import com.example.resonance.service.CompanyService
 import com.example.resonance.service.StudentService
 import com.example.resonance.service.UserService
+import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.util.UUID
@@ -21,7 +27,8 @@ class UserServiceImpl(
     private val userDao: UserDao,
     private val studentService: StudentService,
     private val companyService: CompanyService,
-    private val passwordEncoder: PasswordEncoder
+    private val passwordEncoder: PasswordEncoder,
+    private val jwtUtil: JwtUtil,
 ): UserService {
     override fun getUsers(): List<String> =
         userDao.findAll().map { it.email }
@@ -29,35 +36,41 @@ class UserServiceImpl(
     override fun getUser(id: UUID): UserEntity =
         userDao.findById(id).getOrElse { throw RuntimeException("User with id $id not found") }
 
+    override fun getId(email: String): UUID {
+        return userDao.findByEmail(email)?.id ?: throw RuntimeException("User with email $email already exists")
+    }
+
     override fun getEmail(id: UUID): String {
         if (userDao.existsById(id)) return userDao.findProtectionById(id)!!.getEmail()
         else throw RuntimeException("User with id $id not found")
     }
 
-    override fun updateEmail(id: UUID, email: String): String {
-        if (userDao.findByEmail(email) != null) {
-            throw RuntimeException("User with email $email already exists")
+    override fun updateEmail(id: UUID, rq: UpdateEmailRq): UpdateEmailDto {
+        if (userDao.findByEmail(rq.email) != null) {
+            throw RuntimeException("User with email ${rq.email} already exists")
         }
+        var user = getUser(id)
+        user = userDao.save(user.updateEmail(rq.email))
+        val token = jwtUtil.generateToken(user)
+        return UpdateEmailDto(
+            message = "Email updated successfully",
+            newToken = token,
+            newEmail = rq.email
+        )
+    }
+
+    override fun updatePassword(
+        id: UUID,
+        rq: UpdatePasswordRq
+    ): String {
         val user = getUser(id)
-        userDao.save(user.updateEmail(email))
-        return userDao.findProtectionById(id)!!.getEmail()
-    }
-
-    override fun createUser(rq: UpsertUserRq): UserDto {
-        val encryptedPassword = passwordEncoder.encode(rq.getPasswordOrThrow())
-        val user = rq.copy(password = encryptedPassword).toEntity()
-        return userDao.save(modifyUser(user, rq)).toDto()
-    }
-
-    private fun modifyUser(user: UserEntity, rq: UpsertUserRq): UserEntity {
-        when (rq.userType) {
-            UserType.STUDENT -> {userDao.apply {
-                user.userId = studentService.getStudent(rq.userId).id ?: throw RuntimeException("User not found")
-            }}
-            UserType.COMPANY -> {userDao.apply {
-                user.userId = companyService.getCompany(rq.userId).id ?: throw RuntimeException("User not found")
-            }}
+        if (!passwordEncoder.matches(rq.oldPassword, user.password)) {
+            throw BadCredentialsException("Invalid credentials")
         }
-        return user
+        if (rq.password != rq.confirmPassword) throw IllegalArgumentException("Passwords do not match")
+        if (rq.password.length < 8) throw IllegalArgumentException("Password must be at least 8 characters")
+        val encryptedPassword = passwordEncoder.encode(rq.password)!!
+        userDao.save(user.updatePassword(encryptedPassword))
+        return userDao.findProtectionById(id)!!.getEmail()
     }
 }

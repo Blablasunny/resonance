@@ -5,6 +5,7 @@ import com.example.resonance.model.schema.request.UpsertCompanyRq
 import com.example.resonance.model.schema.dto.CompanyDto
 import com.example.resonance.model.schema.request.UpsertStudentRq
 import com.example.resonance.service.CompanyService
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -25,10 +26,12 @@ class CompanyController(
     @GetMapping("/{id}")
     fun getCompany(@PathVariable("id") id: UUID) = companyService.getCompany(id).toDto()
 
+    @PreAuthorize("@securityService.isCompanyOwner(#id)")
     @PostMapping("/{id}")
     fun updateCompany(@PathVariable("id") id: UUID, @RequestBody rq: UpsertCompanyRq) =
         companyService.updateCompany(id, rq)
 
+    @PreAuthorize("@securityService.isCompanyOwner(#id)")
     @DeleteMapping("/{id}")
     fun deleteCompany(@PathVariable("id") id: UUID) = companyService.deleteCompany(id)
 }

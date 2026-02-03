@@ -46,3 +46,4 @@ class SecurityConfig {
             .build()
     }
 }
+

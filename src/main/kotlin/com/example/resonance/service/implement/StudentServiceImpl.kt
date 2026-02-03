@@ -37,6 +37,10 @@ class StudentServiceImpl(
         rq: UpsertStudentRq
     ): StudentDto {
         val student = rq.toEntity()
+        val oldStudent = getStudent(id)
+        if (oldStudent == student) {
+            return oldStudent.toDto()
+        }
         if (student in studentDao.findAll()) {
             throw RuntimeException("this student already exists")
         }
@@ -51,5 +55,4 @@ class StudentServiceImpl(
         studentDao.deleteById(id)
         userDao.deleteById(userId!!)
     }
-
 }

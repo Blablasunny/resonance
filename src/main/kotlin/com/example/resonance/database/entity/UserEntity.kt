@@ -20,7 +20,7 @@ data class UserEntity (
     @Column(name = "email", nullable = false, unique = true)
     var email: String,
     @Column(name = "password", nullable = false)
-    val password: String,
+    var password: String,
 ) : AbstractEntity()
 
 enum class UserType {

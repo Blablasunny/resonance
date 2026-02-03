@@ -32,6 +32,10 @@ class CompanyServiceImpl(
         rq: UpsertCompanyRq
     ): CompanyDto {
         val company = rq.toEntity()
+        val oldCompany = getCompany(id)
+        if (oldCompany == company) {
+            return oldCompany.toDto()
+        }
         if (company in companyDao.findAll()) {
             throw RuntimeException("this company already exists")
         }
