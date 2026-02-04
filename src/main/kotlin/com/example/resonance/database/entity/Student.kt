@@ -34,6 +34,9 @@ data class Student(
 ) : AbstractEntity() {
     @ManyToMany(mappedBy = "students")
     var educations: MutableSet<Education> = mutableSetOf()
+
+    @ManyToMany(mappedBy = "students")
+    var achievements: MutableSet<Achievement> = mutableSetOf()
 }
 
 enum class Gender {

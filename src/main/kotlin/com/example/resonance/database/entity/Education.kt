@@ -38,5 +38,8 @@ data class Education(
 }
 
 enum class EducationLevel {
-    BACHELOR, MASTER, SPECIALIST, POSTGRADUATE
+    BACHELOR,     // Бакалавриат
+    MASTER,       // Магистратура
+    SPECIALIST,   // Специалитет
+    POSTGRADUATE, // Аспирантура
 }

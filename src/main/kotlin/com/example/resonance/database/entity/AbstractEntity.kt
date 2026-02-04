@@ -22,6 +22,5 @@ abstract class AbstractEntity {
     val createdAt: LocalDateTime = LocalDateTime.now()
 
     @Column(name = "updated_at")
-    @UpdateTimestamp
     var updatedAt: LocalDateTime = LocalDateTime.now()
 }

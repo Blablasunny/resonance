@@ -1,6 +1,8 @@
 package com.example.resonance.controller
 
+import com.example.resonance.model.schema.dto.EmailDto
 import com.example.resonance.model.schema.dto.UpdateEmailDto
+import com.example.resonance.model.schema.request.EmailRq
 import com.example.resonance.model.schema.request.UpdateEmailRq
 import com.example.resonance.model.schema.request.UpdatePasswordRq
 import com.example.resonance.service.UserService
@@ -19,13 +21,13 @@ class UserController(
     val userService: UserService,
 ) {
     @GetMapping
-    fun getUsers(): List<String> = userService.getUsers()
+    fun getUsers(): List<EmailDto> = userService.getUsers()
 
     @GetMapping("/id")
-    fun getId(@RequestBody rq: String) : UUID = userService.getId(rq)
+    fun getId(@RequestBody rq: EmailRq) : UUID = userService.getId(rq)
 
     @GetMapping("/{id}")
-    fun getEmail(@PathVariable id: UUID): String = userService.getEmail(id)
+    fun getEmail(@PathVariable id: UUID): EmailDto = userService.getEmail(id)
 
     @PreAuthorize("@securityService.isOwner(#id)")
     @PostMapping("/{id}/email")
@@ -34,6 +36,6 @@ class UserController(
 
     @PreAuthorize("@securityService.isOwner(#id)")
     @PostMapping("/{id}/password")
-    fun updatePassword(@PathVariable id: UUID, @RequestBody rq: UpdatePasswordRq): String =
+    fun updatePassword(@PathVariable id: UUID, @RequestBody rq: UpdatePasswordRq): EmailDto =
         userService.updatePassword(id, rq)
 }

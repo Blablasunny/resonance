@@ -3,8 +3,10 @@ package com.example.resonance.controller
 import com.example.resonance.database.dao.StudentDao
 import com.example.resonance.model.mapper.toDto
 import com.example.resonance.model.schema.dto.StudentDto
+import com.example.resonance.model.schema.request.UpsertAchievementRq
 import com.example.resonance.model.schema.request.UpsertEducationRq
 import com.example.resonance.model.schema.request.UpsertStudentRq
+import com.example.resonance.service.AchievementService
 import com.example.resonance.service.EducationService
 import com.example.resonance.service.StudentService
 import org.springframework.security.access.prepost.PreAuthorize
@@ -22,6 +24,7 @@ import java.util.UUID
 class StudentController(
     private val studentService: StudentService,
     private val educationService: EducationService,
+    private val achievementService: AchievementService,
 ) {
     @GetMapping
     fun getStudents(): List<StudentDto> = studentService.getStudents()
@@ -50,11 +53,31 @@ class StudentController(
 
     @PreAuthorize("@securityService.isStudentOwner(#studentId)")
     @PostMapping("/educations/{studentId}/{id}")
-    fun updateEducation(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID, @RequestBody rq: UpsertEducationRq) =
+    fun changeEducation(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID, @RequestBody rq: UpsertEducationRq) =
         educationService.changeEducation(id, rq, studentId)
 
     @PreAuthorize("@securityService.isStudentOwner(#studentId)")
     @DeleteMapping("/educations/{studentId}/{id}")
     fun deleteEducation(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID) =
-        educationService.delEducation(id, studentId)
+        educationService.deleteEducation(id, studentId)
+
+
+    @GetMapping("/achievements/{studentId}")
+    fun getAchievementByStudentId(@PathVariable("studentId") studentId: UUID) =
+        achievementService.getAchievementByStudentId(studentId)
+
+    @PreAuthorize("@securityService.isStudentOwner(#studentId)")
+    @PostMapping("/achievements/{studentId}")
+    fun addAchievement(@PathVariable("studentId") studentId: UUID, @RequestBody rq: UpsertAchievementRq) =
+        achievementService.addAchievement(studentId, rq)
+
+    @PreAuthorize("@securityService.isStudentOwner(#studentId)")
+    @PostMapping("/achievements/{studentId}/{id}")
+    fun changeAchievement(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID, @RequestBody rq: UpsertAchievementRq) =
+        achievementService.changeAchievement(id, rq, studentId)
+
+    @PreAuthorize("@securityService.isStudentOwner(#studentId)")
+    @DeleteMapping("/achievements/{studentId}/{id}")
+    fun deleteAchievement(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID) =
+        achievementService.deleteAchievement(id, studentId)
 }

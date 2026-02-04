@@ -2,20 +2,16 @@ package com.example.resonance.service.implement
 
 import com.example.resonance.database.dao.EducationDao
 import com.example.resonance.database.dao.StudentDao
-import com.example.resonance.database.dao.UserDao
 import com.example.resonance.database.entity.Education
 import com.example.resonance.model.mapper.toDto
 import com.example.resonance.model.mapper.toEntity
 import com.example.resonance.model.mapper.update
 import com.example.resonance.model.schema.dto.EducationDto
-import com.example.resonance.model.schema.dto.StudentDto
 import com.example.resonance.model.schema.request.UpsertEducationRq
 import com.example.resonance.service.EducationService
 import com.example.resonance.service.StudentService
-import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
 import java.util.UUID
 import kotlin.jvm.optionals.getOrElse
 
@@ -53,7 +49,7 @@ class EducationServiceImpl(
         studentId: UUID
     ): EducationDto {
         val education = rq.toEntity()
-        delEducation(id, studentId)
+        deleteEducation(id, studentId)
         for (ed in educationDao.findAll()) {
             if (education == ed) {
                 return updateEducation(ed.id!!, rq, studentId)
@@ -62,19 +58,19 @@ class EducationServiceImpl(
         return createEducation(rq, studentId)
     }
 
-    override fun delEducation(id: UUID, studentId: UUID) {
+    override fun deleteEducation(id: UUID, studentId: UUID) {
         if (!educationDao.existsById(id)) {
             throw RuntimeException("Education with id $id not found")
         }
         val education = educationDao.findById(id).getOrElse { throw RuntimeException("Education with id $id not found") }
-        val student = studentDao.findById(studentId).getOrElse { throw RuntimeException("Education with id $id not found") }
+        val student = studentDao.findById(studentId).getOrElse { throw RuntimeException("Student with id $id not found") }
         student.educations.add(education)
         education.students.remove(student)
     }
 
     private fun createEducation(rq: UpsertEducationRq, studentId: UUID): EducationDto {
         val education = rq.toEntity()
-        return educationDao.save(modifyEducation(rq, education, studentId)).toDto()
+        return educationDao.save(modifyEducation(education, studentId)).toDto()
     }
 
     private fun updateEducation(
@@ -83,10 +79,10 @@ class EducationServiceImpl(
         studentId: UUID
     ): EducationDto {
         val education = getEducation(id).update(rq)
-        return educationDao.save(modifyEducation(rq, education, studentId)).toDto()
+        return educationDao.save(modifyEducation(education, studentId)).toDto()
     }
 
-    private fun modifyEducation(rq: UpsertEducationRq, education: Education, studentId: UUID): Education {
+    private fun modifyEducation(education: Education, studentId: UUID): Education {
         if (studentId !in education.students.map { it.id }) {
             val student = studentService.getStudent(studentId)
             education.students.add(student)

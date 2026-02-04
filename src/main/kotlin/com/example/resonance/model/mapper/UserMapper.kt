@@ -1,6 +1,7 @@
 package com.example.resonance.model.mapper
 
 import com.example.resonance.database.entity.UserEntity
+import com.example.resonance.model.schema.dto.EmailDto
 import com.example.resonance.model.schema.request.UpsertUserRq
 import com.example.resonance.model.schema.dto.UserDto
 import java.time.LocalDateTime
@@ -35,3 +36,5 @@ fun UserEntity.updatePassword(newPassword: String): UserEntity =
         password = newPassword
         updatedAt = LocalDateTime.now()
     }
+
+fun UserEntity.toEmailDto() = EmailDto(email = email)

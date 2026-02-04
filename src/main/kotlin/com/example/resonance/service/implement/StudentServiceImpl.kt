@@ -50,8 +50,13 @@ class StudentServiceImpl(
     override fun deleteStudent(id: UUID) {
         val student = studentDao.findById(id).getOrElse { throw RuntimeException("student not found") }
         val userId = userDao.findByUserId(id)!!.id
+
         student.educations.forEach { education -> education.students.remove(student) }
         student.educations.clear()
+
+        student.achievements.forEach { achievement -> achievement.students.remove(student) }
+        student.achievements.clear()
+
         studentDao.deleteById(id)
         userDao.deleteById(userId!!)
     }
