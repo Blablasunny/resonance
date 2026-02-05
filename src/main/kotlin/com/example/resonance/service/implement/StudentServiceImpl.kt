@@ -1,6 +1,5 @@
 package com.example.resonance.service.implement
 
-import com.example.resonance.database.dao.EducationDao
 import com.example.resonance.database.dao.StudentDao
 import com.example.resonance.database.dao.UserDao
 import com.example.resonance.database.entity.Student
@@ -9,8 +8,6 @@ import com.example.resonance.model.schema.dto.StudentDto
 import com.example.resonance.model.mapper.toDto
 import com.example.resonance.model.mapper.toEntity
 import com.example.resonance.model.mapper.update
-import com.example.resonance.model.schema.dto.EducationDto
-import com.example.resonance.model.schema.request.UpsertEducationRq
 import com.example.resonance.service.StudentService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -48,17 +45,7 @@ class StudentServiceImpl(
     }
 
     override fun deleteStudent(id: UUID) {
-        val student = studentDao.findById(id).getOrElse { throw RuntimeException("student not found") }
         val userId = userDao.findByUserId(id)!!.id
-
-        student.educations.forEach { education -> education.students.remove(student) }
-        student.educations.clear()
-
-        student.achievements.forEach { achievement -> achievement.students.remove(student) }
-        student.achievements.clear()
-
-        student.experiences.forEach { experience -> experience.students.remove(student) }
-        student.experiences.clear()
 
         studentDao.deleteById(id)
         userDao.deleteById(userId!!)

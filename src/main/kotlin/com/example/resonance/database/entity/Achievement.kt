@@ -36,8 +36,7 @@ data class Achievement(
 
     @PreRemove
     private fun preRemove() {
-        val studentsCopy = students.toList()
-        studentsCopy.forEach { it.achievements.remove(this) }
+        students.toList().forEach { it.achievements.remove(this) }
         students.clear()
     }
 }

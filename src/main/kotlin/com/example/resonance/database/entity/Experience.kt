@@ -30,8 +30,7 @@ data class Experience(
 
     @PreRemove
     fun preRemove() {
-        val studentsCopy = students.toList()
-        studentsCopy.forEach { it.experiences.remove(this) }
+        students.toList().forEach { it.experiences.remove(this) }
         students.clear()
     }
 }

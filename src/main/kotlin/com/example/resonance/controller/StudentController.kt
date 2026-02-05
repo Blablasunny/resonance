@@ -1,16 +1,21 @@
 package com.example.resonance.controller
 
-import com.example.resonance.database.dao.StudentDao
 import com.example.resonance.model.mapper.toDto
 import com.example.resonance.model.schema.dto.StudentDto
 import com.example.resonance.model.schema.request.UpsertAchievementRq
 import com.example.resonance.model.schema.request.UpsertEducationRq
 import com.example.resonance.model.schema.request.UpsertExperienceRq
+import com.example.resonance.model.schema.request.UpsertOccupationOfInterestRq
+import com.example.resonance.model.schema.request.UpsertSphereOfInterestRq
 import com.example.resonance.model.schema.request.UpsertStudentRq
+import com.example.resonance.model.schema.request.UpsertSubjectRq
 import com.example.resonance.service.AchievementService
 import com.example.resonance.service.EducationService
 import com.example.resonance.service.ExperienceService
+import com.example.resonance.service.OccupationOfInterestService
+import com.example.resonance.service.SphereOfInterestService
 import com.example.resonance.service.StudentService
+import com.example.resonance.service.SubjectService
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -28,6 +33,9 @@ class StudentController(
     private val educationService: EducationService,
     private val achievementService: AchievementService,
     private val experienceService: ExperienceService,
+    private val subjectService: SubjectService,
+    private val sphereOfInterestService: SphereOfInterestService,
+    private val occupationOfInterestService: OccupationOfInterestService,
 ) {
     @GetMapping
     fun getStudents(): List<StudentDto> = studentService.getStudents()
@@ -103,4 +111,58 @@ class StudentController(
     @DeleteMapping("/experiences/{studentId}/{id}")
     fun deleteExperience(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID) =
         experienceService.deleteExperience(id, studentId)
+
+
+    @GetMapping("/subjects/{studentId}")
+    fun getSubjectByStudentId(@PathVariable("studentId") studentId: UUID) =
+        subjectService.getSubjectByStudentId(studentId)
+
+    @PreAuthorize("@securityService.isStudentOwner(#studentId)")
+    @PostMapping("/subjects/{studentId}")
+    fun addSubject(@PathVariable("studentId") studentId: UUID, @RequestBody rq: UpsertSubjectRq) =
+        subjectService.addSubject(studentId, rq)
+
+    @PreAuthorize("@securityService.isStudentOwner(#studentId)")
+    @PostMapping("/subjects/{studentId}/{id}")
+    fun changeSubject(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID, @RequestBody rq: UpsertSubjectRq) =
+        subjectService.changeSubject(id, rq, studentId)
+
+    @PreAuthorize("@securityService.isStudentOwner(#studentId)")
+    @DeleteMapping("/subjects/{studentId}/{id}")
+    fun deleteSubject(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID) =
+        subjectService.deleteSubject(id, studentId)
+
+
+    @GetMapping("/sphere-of-interests/{studentId}")
+    fun getSphereOfInterestByStudentId(@PathVariable("studentId") studentId: UUID) =
+        sphereOfInterestService.getSphereOfInterestByStudentId(studentId)
+
+    @PostMapping("/sphere-of-interests/{studentId}")
+    fun addSphereOfInterest(@PathVariable("studentId") studentId: UUID, @RequestBody rq: UpsertSphereOfInterestRq) =
+        sphereOfInterestService.addSphereOfInterest(studentId, rq)
+
+    @PostMapping("/sphere-of-interests/{studentId}/{id}")
+    fun changeSphereOfInterest(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID, @RequestBody rq: UpsertSphereOfInterestRq) =
+        sphereOfInterestService.changeSphereOfInterest(id, rq, studentId)
+
+    @DeleteMapping("/sphere-of-interests/{studentId}/{id}")
+    fun deleteSphereOfInterest(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID) =
+        sphereOfInterestService.deleteSphereOfInterest(id, studentId)
+
+
+    @GetMapping("/occupation-of-interests/{studentId}")
+    fun getOccupationOfInterestByStudentId(@PathVariable("studentId") studentId: UUID) =
+        occupationOfInterestService.getOccupationOfInterestByStudentId(studentId)
+
+    @PostMapping("/occupation-of-interests/{studentId}")
+    fun addOccupationOfInterest(@PathVariable("studentId") studentId: UUID, @RequestBody rq: UpsertOccupationOfInterestRq) =
+        occupationOfInterestService.addOccupationOfInterest(studentId, rq)
+
+    @PostMapping("/occupation-of-interests/{studentId}/{id}")
+    fun changeOccupationOfInterest(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID, @RequestBody rq: UpsertOccupationOfInterestRq) =
+        occupationOfInterestService.changeOccupationOfInterest(id, rq, studentId)
+
+    @DeleteMapping("/occupation-of-interests/{studentId}/{id}")
+    fun deleteOccupationOfInterest(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID) =
+        occupationOfInterestService.deleteOccupationOfInterest(id, studentId)
 }

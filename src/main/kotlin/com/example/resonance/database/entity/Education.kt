@@ -31,8 +31,7 @@ data class Education(
 
     @PreRemove
     private fun preRemove() {
-        val studentsCopy = students.toList()
-        studentsCopy.forEach { it.educations.remove(this) }
+        students.toList().forEach { it.educations.remove(this) }
         students.clear()
     }
 }

@@ -9,6 +9,7 @@ import jakarta.persistence.FetchType
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.JoinTable
 import jakarta.persistence.ManyToMany
+import jakarta.persistence.PreRemove
 import jakarta.persistence.Table
 import java.time.LocalDate
 
@@ -40,6 +41,25 @@ data class Student(
 
     @ManyToMany(mappedBy = "students")
     var experiences: MutableSet<Experience> = mutableSetOf()
+
+    @ManyToMany(mappedBy = "students")
+    var subjects: MutableSet<Subject> = mutableSetOf()
+
+    @ManyToMany(mappedBy = "students")
+    var sphereOfInterests: MutableSet<SphereOfInterest> = mutableSetOf()
+
+    @ManyToMany(mappedBy = "students")
+    var occupationOfInterests: MutableSet<OccupationOfInterest> = mutableSetOf()
+
+    @PreRemove
+    fun preRemove() {
+        educations.toList().forEach { it.students.remove(this) }
+        achievements.toList().forEach { it.students.remove(this) }
+        experiences.toList().forEach { it.students.remove(this) }
+        subjects.toList().forEach { it.students.remove(this) }
+        sphereOfInterests.toList().forEach { it.students.remove(this) }
+        occupationOfInterests.toList().forEach { it.students.remove(this) }
+    }
 }
 
 enum class Gender {
