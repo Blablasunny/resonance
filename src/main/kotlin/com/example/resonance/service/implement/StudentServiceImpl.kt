@@ -57,6 +57,9 @@ class StudentServiceImpl(
         student.achievements.forEach { achievement -> achievement.students.remove(student) }
         student.achievements.clear()
 
+        student.experiences.forEach { experience -> experience.students.remove(student) }
+        student.experiences.clear()
+
         studentDao.deleteById(id)
         userDao.deleteById(userId!!)
     }

@@ -19,11 +19,10 @@ import kotlin.jvm.optionals.getOrElse
 @Service
 class AchievementServiceImpl(
     private val achievementDao: AchievementDao,
-    private val studentDao: StudentDao,
     private val studentService: StudentService,
 ): AchievementService {
     override fun getAchievementByStudentId(studentId: UUID): List<AchievementDto> =
-        achievementDao.findAchievementsByStudents(studentDao.findById(studentId)).map { it.toDto() }
+        achievementDao.findAchievementsByStudents(studentService.getStudent(studentId)).map { it.toDto() }
 
     override fun getAchievement(id: UUID): Achievement =
         achievementDao.findById(id).getOrElse { throw RuntimeException("Achievement with id $id not found") }
@@ -59,9 +58,12 @@ class AchievementServiceImpl(
     }
 
     override fun deleteAchievement(id: UUID, studentId: UUID) {
-        val achievement = achievementDao.findById(id).getOrElse { throw RuntimeException("Achievement with id $id not found") }
-        val student = studentDao.findById(studentId).getOrElse { throw RuntimeException("Student with id $id not found") }
-        student.achievements.add(achievement)
+        if (!getAchievement(id).students.map { it.id }.contains(studentId)) {
+            throw RuntimeException("Student with id $studentId doesn't have achievement with id $id")
+        }
+        val achievement = getAchievement(id)
+        val student = studentService.getStudent(studentId)
+        student.achievements.remove(achievement)
         achievement.students.remove(student)
     }
 

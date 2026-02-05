@@ -19,11 +19,10 @@ import kotlin.jvm.optionals.getOrElse
 @Service
 class EducationServiceImpl(
     private val educationDao: EducationDao,
-    private val studentDao: StudentDao,
     private val studentService: StudentService,
 ): EducationService {
     override fun getEducationsByStudentId(studentId: UUID): List<EducationDto> =
-        educationDao.findEducationsByStudents(studentDao.findById(studentId)).map { it.toDto() }
+        educationDao.findEducationsByStudents(studentService.getStudent(studentId)).map { it.toDto() }
 
     override fun getEducation(id: UUID) =
         educationDao.findById(id).getOrElse { throw RuntimeException("Education with id $id not found") }
@@ -59,12 +58,12 @@ class EducationServiceImpl(
     }
 
     override fun deleteEducation(id: UUID, studentId: UUID) {
-        if (!educationDao.existsById(id)) {
-            throw RuntimeException("Education with id $id not found")
+        if (!getEducation(id).students.map { it.id }.contains(studentId)) {
+            throw RuntimeException("Student with id $studentId doesn't have education with id $id")
         }
-        val education = educationDao.findById(id).getOrElse { throw RuntimeException("Education with id $id not found") }
-        val student = studentDao.findById(studentId).getOrElse { throw RuntimeException("Student with id $id not found") }
-        student.educations.add(education)
+        val education = getEducation(id)
+        val student = studentService.getStudent(studentId)
+        student.educations.remove(education)
         education.students.remove(student)
     }
 

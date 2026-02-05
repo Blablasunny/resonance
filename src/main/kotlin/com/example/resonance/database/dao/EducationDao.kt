@@ -5,5 +5,5 @@ import com.example.resonance.database.entity.Student
 import java.util.Optional
 
 interface EducationDao: AbstractDao<Education> {
-    fun findEducationsByStudents(students: Optional<Student>): MutableList<Education>
+    fun findEducationsByStudents(students: Student): MutableList<Education>
 }

@@ -5,9 +5,11 @@ import com.example.resonance.model.mapper.toDto
 import com.example.resonance.model.schema.dto.StudentDto
 import com.example.resonance.model.schema.request.UpsertAchievementRq
 import com.example.resonance.model.schema.request.UpsertEducationRq
+import com.example.resonance.model.schema.request.UpsertExperienceRq
 import com.example.resonance.model.schema.request.UpsertStudentRq
 import com.example.resonance.service.AchievementService
 import com.example.resonance.service.EducationService
+import com.example.resonance.service.ExperienceService
 import com.example.resonance.service.StudentService
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -25,6 +27,7 @@ class StudentController(
     private val studentService: StudentService,
     private val educationService: EducationService,
     private val achievementService: AchievementService,
+    private val experienceService: ExperienceService,
 ) {
     @GetMapping
     fun getStudents(): List<StudentDto> = studentService.getStudents()
@@ -80,4 +83,24 @@ class StudentController(
     @DeleteMapping("/achievements/{studentId}/{id}")
     fun deleteAchievement(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID) =
         achievementService.deleteAchievement(id, studentId)
+
+
+    @GetMapping("/experiences/{studentId}")
+    fun getExperienceByStudentId(@PathVariable("studentId") studentId: UUID) =
+        experienceService.getExperienceByStudentId(studentId)
+
+    @PreAuthorize("@securityService.isStudentOwner(#studentId)")
+    @PostMapping("/experiences/{studentId}")
+    fun addExperience(@PathVariable("studentId") studentId: UUID, @RequestBody rq: UpsertExperienceRq) =
+        experienceService.addExperience(studentId, rq)
+
+    @PreAuthorize("@securityService.isStudentOwner(#studentId)")
+    @PostMapping("/experiences/{studentId}/{id}")
+    fun changeExperience(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID, @RequestBody rq: UpsertExperienceRq) =
+        experienceService.changeExperience(id, rq, studentId)
+
+    @PreAuthorize("@securityService.isStudentOwner(#studentId)")
+    @DeleteMapping("/experiences/{studentId}/{id}")
+    fun deleteExperience(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID) =
+        experienceService.deleteExperience(id, studentId)
 }

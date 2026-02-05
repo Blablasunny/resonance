@@ -37,6 +37,9 @@ data class Student(
 
     @ManyToMany(mappedBy = "students")
     var achievements: MutableSet<Achievement> = mutableSetOf()
+
+    @ManyToMany(mappedBy = "students")
+    var experiences: MutableSet<Experience> = mutableSetOf()
 }
 
 enum class Gender {
