@@ -3,6 +3,8 @@ package com.example.resonance.database.entity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Lob
+import jakarta.persistence.ManyToMany
+import jakarta.persistence.PreRemove
 import jakarta.persistence.Table
 
 @Entity
@@ -19,4 +21,12 @@ data class Company (
     var websiteLink : String,
     @Column(name = "career_page_link", nullable = false)
     var careerPageLink : String,
-) : AbstractEntity()
+) : AbstractEntity() {
+    @ManyToMany(mappedBy = "companies")
+    var activities: MutableSet<Activity> = mutableSetOf()
+
+    @PreRemove
+    fun preRemove() {
+        activities.toList().forEach { it.companies.remove(this) }
+    }
+}

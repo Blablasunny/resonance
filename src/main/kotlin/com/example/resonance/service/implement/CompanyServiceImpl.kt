@@ -43,9 +43,8 @@ class CompanyServiceImpl(
     }
 
     override fun deleteCompany(id: UUID) {
-        val company = companyDao.findById(id).getOrElse { throw RuntimeException("company not found") }
         val userId = userDao.findByUserId(id)!!.id
-        companyDao.delete(company)
+        companyDao.deleteById(id)
         userDao.deleteById(userId!!)
     }
 }

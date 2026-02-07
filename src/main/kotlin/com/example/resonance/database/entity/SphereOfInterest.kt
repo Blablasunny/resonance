@@ -24,6 +24,5 @@ data class SphereOfInterest(
     @PreRemove
     fun preRemove() {
         students.toList().forEach { it.sphereOfInterests.remove(this) }
-        students.clear()
     }
 }

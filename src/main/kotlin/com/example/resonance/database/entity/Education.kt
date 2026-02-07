@@ -32,7 +32,6 @@ data class Education(
     @PreRemove
     private fun preRemove() {
         students.toList().forEach { it.educations.remove(this) }
-        students.clear()
     }
 }
 

@@ -24,6 +24,5 @@ data class OccupationOfInterest(
     @PreRemove
     fun preRemove() {
         students.toList().forEach { it.occupationOfInterests.remove(this) }
-        students.clear()
     }
 }

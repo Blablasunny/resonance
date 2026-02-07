@@ -24,6 +24,5 @@ data class Subject(
     @PreRemove
     fun preRemove() {
         students.toList().forEach { it.subjects.remove(this) }
-        students.clear()
     }
 }

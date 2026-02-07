@@ -37,7 +37,6 @@ data class Achievement(
     @PreRemove
     private fun preRemove() {
         students.toList().forEach { it.achievements.remove(this) }
-        students.clear()
     }
 }
 

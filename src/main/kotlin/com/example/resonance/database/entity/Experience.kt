@@ -31,6 +31,5 @@ data class Experience(
     @PreRemove
     fun preRemove() {
         students.toList().forEach { it.experiences.remove(this) }
-        students.clear()
     }
 }

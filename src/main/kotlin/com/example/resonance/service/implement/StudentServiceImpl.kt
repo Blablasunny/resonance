@@ -46,7 +46,6 @@ class StudentServiceImpl(
 
     override fun deleteStudent(id: UUID) {
         val userId = userDao.findByUserId(id)!!.id
-
         studentDao.deleteById(id)
         userDao.deleteById(userId!!)
     }
