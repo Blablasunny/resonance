@@ -51,6 +51,9 @@ data class Student(
     @ManyToMany(mappedBy = "students")
     var occupationOfInterests: MutableSet<OccupationOfInterest> = mutableSetOf()
 
+    @ManyToMany(mappedBy = "students")
+    var socialProfiles: MutableSet<SocialProfile> = mutableSetOf()
+
     @PreRemove
     fun preRemove() {
         educations.toList().forEach { it.students.remove(this) }
@@ -59,6 +62,7 @@ data class Student(
         subjects.toList().forEach { it.students.remove(this) }
         sphereOfInterests.toList().forEach { it.students.remove(this) }
         occupationOfInterests.toList().forEach { it.students.remove(this) }
+        socialProfiles.toList().forEach { it.students.remove(this) }
     }
 }
 

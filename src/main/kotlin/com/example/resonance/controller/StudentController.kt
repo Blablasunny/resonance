@@ -1,11 +1,13 @@
 package com.example.resonance.controller
 
+import com.example.resonance.database.entity.UserType
 import com.example.resonance.model.mapper.toDto
 import com.example.resonance.model.schema.dto.StudentDto
 import com.example.resonance.model.schema.request.UpsertAchievementRq
 import com.example.resonance.model.schema.request.UpsertEducationRq
 import com.example.resonance.model.schema.request.UpsertExperienceRq
 import com.example.resonance.model.schema.request.UpsertOccupationOfInterestRq
+import com.example.resonance.model.schema.request.UpsertSocialProfileRq
 import com.example.resonance.model.schema.request.UpsertSphereOfInterestRq
 import com.example.resonance.model.schema.request.UpsertStudentRq
 import com.example.resonance.model.schema.request.UpsertSubjectRq
@@ -13,6 +15,7 @@ import com.example.resonance.service.AchievementService
 import com.example.resonance.service.EducationService
 import com.example.resonance.service.ExperienceService
 import com.example.resonance.service.OccupationOfInterestService
+import com.example.resonance.service.SocialProfileService
 import com.example.resonance.service.SphereOfInterestService
 import com.example.resonance.service.StudentService
 import com.example.resonance.service.SubjectService
@@ -36,6 +39,7 @@ class StudentController(
     private val subjectService: SubjectService,
     private val sphereOfInterestService: SphereOfInterestService,
     private val occupationOfInterestService: OccupationOfInterestService,
+    private val socialProfileService: SocialProfileService,
 ) {
     @GetMapping
     fun getStudents(): List<StudentDto> = studentService.getStudents()
@@ -137,14 +141,17 @@ class StudentController(
     fun getSphereOfInterestByStudentId(@PathVariable("studentId") studentId: UUID) =
         sphereOfInterestService.getSphereOfInterestByStudentId(studentId)
 
+    @PreAuthorize("@securityService.isStudentOwner(#studentId)")
     @PostMapping("/sphere-of-interests/{studentId}")
     fun addSphereOfInterest(@PathVariable("studentId") studentId: UUID, @RequestBody rq: UpsertSphereOfInterestRq) =
         sphereOfInterestService.addSphereOfInterest(studentId, rq)
 
+    @PreAuthorize("@securityService.isStudentOwner(#studentId)")
     @PostMapping("/sphere-of-interests/{studentId}/{id}")
     fun changeSphereOfInterest(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID, @RequestBody rq: UpsertSphereOfInterestRq) =
         sphereOfInterestService.changeSphereOfInterest(id, rq, studentId)
 
+    @PreAuthorize("@securityService.isStudentOwner(#studentId)")
     @DeleteMapping("/sphere-of-interests/{studentId}/{id}")
     fun deleteSphereOfInterest(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID) =
         sphereOfInterestService.deleteSphereOfInterest(id, studentId)
@@ -154,15 +161,38 @@ class StudentController(
     fun getOccupationOfInterestByStudentId(@PathVariable("studentId") studentId: UUID) =
         occupationOfInterestService.getOccupationOfInterestByStudentId(studentId)
 
+    @PreAuthorize("@securityService.isStudentOwner(#studentId)")
     @PostMapping("/occupation-of-interests/{studentId}")
     fun addOccupationOfInterest(@PathVariable("studentId") studentId: UUID, @RequestBody rq: UpsertOccupationOfInterestRq) =
         occupationOfInterestService.addOccupationOfInterest(studentId, rq)
 
+    @PreAuthorize("@securityService.isStudentOwner(#studentId)")
     @PostMapping("/occupation-of-interests/{studentId}/{id}")
     fun changeOccupationOfInterest(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID, @RequestBody rq: UpsertOccupationOfInterestRq) =
         occupationOfInterestService.changeOccupationOfInterest(id, rq, studentId)
 
+    @PreAuthorize("@securityService.isStudentOwner(#studentId)")
     @DeleteMapping("/occupation-of-interests/{studentId}/{id}")
     fun deleteOccupationOfInterest(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID) =
         occupationOfInterestService.deleteOccupationOfInterest(id, studentId)
+
+
+    @GetMapping("/social-profiles/{studentId}")
+    fun getSocialProfileByStudentId(@PathVariable("studentId") studentId: UUID) =
+        socialProfileService.getSocialProfileByStudentId(studentId)
+
+    @PreAuthorize("@securityService.isStudentOwner(#studentId)")
+    @PostMapping("/social-profiles/{studentId}")
+    fun addSocialProfile(@PathVariable("studentId") studentId: UUID, @RequestBody rq: UpsertSocialProfileRq) =
+        socialProfileService.addSocialProfile(studentId, rq, UserType.STUDENT)
+
+    @PreAuthorize("@securityService.isStudentOwner(#studentId)")
+    @PostMapping("/social-profiles/{studentId}/{id}")
+    fun changeSocialProfile(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID, @RequestBody rq: UpsertSocialProfileRq) =
+        socialProfileService.changeSocialProfile(id, rq, studentId, UserType.STUDENT)
+
+    @PreAuthorize("@securityService.isStudentOwner(#studentId)")
+    @DeleteMapping("/social-profiles/{studentId}/{id}")
+    fun deleteSocialProfile(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID) =
+        socialProfileService.deleteSocialProfile(id, studentId, UserType.STUDENT)
 }

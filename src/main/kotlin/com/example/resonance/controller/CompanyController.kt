@@ -1,12 +1,15 @@
 package com.example.resonance.controller
 
+import com.example.resonance.database.entity.UserType
 import com.example.resonance.model.mapper.toDto
 import com.example.resonance.model.schema.request.UpsertCompanyRq
 import com.example.resonance.model.schema.dto.CompanyDto
 import com.example.resonance.model.schema.request.UpsertActivityRq
+import com.example.resonance.model.schema.request.UpsertSocialProfileRq
 import com.example.resonance.model.schema.request.UpsertStudentRq
 import com.example.resonance.service.ActivityService
 import com.example.resonance.service.CompanyService
+import com.example.resonance.service.SocialProfileService
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -22,6 +25,7 @@ import java.util.UUID
 class CompanyController(
     private val companyService: CompanyService,
     private val activityService: ActivityService,
+    private val socialProfileService: SocialProfileService,
 ) {
     @GetMapping
     fun getCompanies(): List<CompanyDto> = companyService.getCompanies()
@@ -57,4 +61,24 @@ class CompanyController(
     @DeleteMapping("/activities/{companyId}/{id}")
     fun changeActivity(@PathVariable("companyId") companyId: UUID, @PathVariable("id") id: UUID) =
         activityService.deleteActivity(id, companyId)
+
+
+    @GetMapping("/social-profiles/{companyId}")
+    fun getSocialProfileByStudentId(@PathVariable("companyId") companyId: UUID) =
+        socialProfileService.getSocialProfileByCompanyId(companyId)
+
+    @PreAuthorize("@securityService.isCompanyOwner(#companyId)")
+    @PostMapping("/social-profiles/{companyId}")
+    fun addSocialProfile(@PathVariable("companyId") companyId: UUID, @RequestBody rq: UpsertSocialProfileRq) =
+        socialProfileService.addSocialProfile(companyId, rq, UserType.COMPANY)
+
+    @PreAuthorize("@securityService.isCompanyOwner(#companyId)")
+    @PostMapping("/social-profiles/{companyId}/{id}")
+    fun changeSocialProfile(@PathVariable("companyId") companyId: UUID, @PathVariable("id") id: UUID, @RequestBody rq: UpsertSocialProfileRq) =
+        socialProfileService.changeSocialProfile(id, rq, companyId, UserType.COMPANY)
+
+    @PreAuthorize("@securityService.isCompanyOwner(#companyId)")
+    @DeleteMapping("/social-profiles/{companyId}/{id}")
+    fun deleteSocialProfile(@PathVariable("companyId") companyId: UUID, @PathVariable("id") id: UUID) =
+        socialProfileService.deleteSocialProfile(id, companyId, UserType.COMPANY)
 }
