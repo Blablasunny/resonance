@@ -7,6 +7,7 @@ import com.example.resonance.model.schema.request.UpsertAchievementRq
 import com.example.resonance.model.schema.request.UpsertEducationRq
 import com.example.resonance.model.schema.request.UpsertExperienceRq
 import com.example.resonance.model.schema.request.UpsertOccupationOfInterestRq
+import com.example.resonance.model.schema.request.UpsertSkillRq
 import com.example.resonance.model.schema.request.UpsertSocialProfileRq
 import com.example.resonance.model.schema.request.UpsertSphereOfInterestRq
 import com.example.resonance.model.schema.request.UpsertStudentRq
@@ -15,6 +16,7 @@ import com.example.resonance.service.AchievementService
 import com.example.resonance.service.EducationService
 import com.example.resonance.service.ExperienceService
 import com.example.resonance.service.OccupationOfInterestService
+import com.example.resonance.service.SkillService
 import com.example.resonance.service.SocialProfileService
 import com.example.resonance.service.SphereOfInterestService
 import com.example.resonance.service.StudentService
@@ -40,6 +42,7 @@ class StudentController(
     private val sphereOfInterestService: SphereOfInterestService,
     private val occupationOfInterestService: OccupationOfInterestService,
     private val socialProfileService: SocialProfileService,
+    private val skillService: SkillService,
 ) {
     @GetMapping
     fun getStudents(): List<StudentDto> = studentService.getStudents()
@@ -195,4 +198,24 @@ class StudentController(
     @DeleteMapping("/social-profiles/{studentId}/{id}")
     fun deleteSocialProfile(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID) =
         socialProfileService.deleteSocialProfile(id, studentId, UserType.STUDENT)
+
+
+    @GetMapping("/skills/{studentId}")
+    fun getSkillByStudentId(@PathVariable("studentId") studentId: UUID) =
+        skillService.getSkillByStudentId(studentId)
+
+    @PreAuthorize("@securityService.isStudentOwner(#studentId)")
+    @PostMapping("/skills/{studentId}")
+    fun addSkill(@PathVariable("studentId") studentId: UUID, @RequestBody rq: UpsertSkillRq) =
+        skillService.addSkill(studentId, rq)
+
+    @PreAuthorize("@securityService.isStudentOwner(#studentId)")
+    @PostMapping("/skills/{studentId}/{id}")
+    fun changeSkill(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID, @RequestBody rq: UpsertSkillRq) =
+        skillService.changeSkill(id, rq, studentId)
+
+    @PreAuthorize("@securityService.isStudentOwner(#studentId)")
+    @DeleteMapping("/skills/{studentId}/{id}")
+    fun deleteSkill(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID) =
+        skillService.deleteSkill(id, studentId)
 }
