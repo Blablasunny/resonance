@@ -6,6 +6,7 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.JoinTable
 import jakarta.persistence.Lob
 import jakarta.persistence.ManyToMany
+import jakarta.persistence.OneToMany
 import jakarta.persistence.PreRemove
 import jakarta.persistence.Table
 
@@ -36,9 +37,13 @@ data class Vacancy(
     @ManyToMany(mappedBy = "vacancies")
     var skills: MutableSet<Skill> = mutableSetOf()
 
+    @ManyToMany(mappedBy = "vacancies")
+    var responsibilities: MutableSet<Responsibility> = mutableSetOf()
+
     @PreRemove
     fun preRemove() {
         companies.toList().forEach { it.vacancies.remove(this) }
         skills.toList().forEach { it.vacancies.remove(this) }
+        responsibilities.toList().forEach { it.vacancies.remove(this) }
     }
 }

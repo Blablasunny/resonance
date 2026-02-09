@@ -5,12 +5,14 @@ import com.example.resonance.model.mapper.toDto
 import com.example.resonance.model.schema.request.UpsertCompanyRq
 import com.example.resonance.model.schema.dto.CompanyDto
 import com.example.resonance.model.schema.request.UpsertActivityRq
+import com.example.resonance.model.schema.request.UpsertResponsibilityRq
 import com.example.resonance.model.schema.request.UpsertSkillRq
 import com.example.resonance.model.schema.request.UpsertSocialProfileRq
 import com.example.resonance.model.schema.request.UpsertStudentRq
 import com.example.resonance.model.schema.request.UpsertVacancyRq
 import com.example.resonance.service.ActivityService
 import com.example.resonance.service.CompanyService
+import com.example.resonance.service.ResponsibilityService
 import com.example.resonance.service.SkillOwner
 import com.example.resonance.service.SkillService
 import com.example.resonance.service.SocialProfileService
@@ -33,6 +35,7 @@ class CompanyController(
     private val socialProfileService: SocialProfileService,
     private val vacancyService: VacancyService,
     private val skillService: SkillService,
+    private val responsibilityService: ResponsibilityService,
 ) {
     @GetMapping
     fun getCompanies(): List<CompanyDto> = companyService.getCompanies()
@@ -132,4 +135,24 @@ class CompanyController(
     @DeleteMapping("/skills/{vacancyId}/{id}")
     fun deleteSkill(@PathVariable("vacancyId") vacancyId: UUID, @PathVariable("id") id: UUID) =
         skillService.deleteSkill(id, vacancyId, SkillOwner.VACANCY)
+
+
+    @GetMapping("/responsibilities/{vacancyId}")
+    fun getResponsibilityByVacancyId(@PathVariable("vacancyId") vacancyId: UUID) =
+        responsibilityService.getResponsibilityByVacancyId(vacancyId)
+
+    @PreAuthorize("@securityService.isVacancyOwner(#vacancyId)")
+    @PostMapping("/responsibilities/{vacancyId}")
+    fun addResponsibility(@PathVariable("vacancyId") vacancyId: UUID, @RequestBody rq: UpsertResponsibilityRq) =
+        responsibilityService.addResponsibility(vacancyId, rq)
+
+    @PreAuthorize("@securityService.isVacancyOwner(#vacancyId)")
+    @PostMapping("/responsibilities/{vacancyId}/{id}")
+    fun changeResponsibility(@PathVariable("vacancyId") vacancyId: UUID, @PathVariable("id") id: UUID, @RequestBody rq: UpsertResponsibilityRq) =
+        responsibilityService.changeResponsibility(id, rq, vacancyId)
+
+    @PreAuthorize("@securityService.isVacancyOwner(#vacancyId)")
+    @DeleteMapping("/responsibilities/{vacancyId}/{id}")
+    fun deleteResponsibility(@PathVariable("vacancyId") vacancyId: UUID, @PathVariable("id") id: UUID) =
+        responsibilityService.deleteResponsibility(id, vacancyId)
 }
