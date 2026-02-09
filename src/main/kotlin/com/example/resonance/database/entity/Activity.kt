@@ -31,7 +31,7 @@ data class Activity(
 ): AbstractEntity() {
     @ManyToMany
     @JoinTable(
-        name = "company_activity",
+        name = "company_activities",
         joinColumns = [JoinColumn(name = "activity_id")],
         inverseJoinColumns = [JoinColumn(name = "company_id")])
     var companies: MutableSet<Company> = mutableSetOf()

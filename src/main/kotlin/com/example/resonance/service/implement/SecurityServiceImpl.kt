@@ -5,6 +5,7 @@ import com.example.resonance.database.entity.UserType
 import com.example.resonance.service.CompanyService
 import com.example.resonance.service.SecurityService
 import com.example.resonance.service.StudentService
+import com.example.resonance.service.VacancyService
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
@@ -13,7 +14,8 @@ import java.util.UUID
 @Service("securityService")
 class SecurityServiceImpl(
     private val studentService: StudentService,
-    private val companyService: CompanyService
+    private val companyService: CompanyService,
+    private val vacancyService: VacancyService,
 ): SecurityService {
     override fun isOwner(
         id: UUID,
@@ -42,6 +44,11 @@ class SecurityServiceImpl(
         }
     }
 
+    override fun isStudentOwner(studentId: UUID): Boolean {
+        val authentication = SecurityContextHolder.getContext().authentication ?: return false
+        return isStudentOwner(studentId, authentication)
+    }
+
     override fun isCompanyOwner(companyId: UUID, authentication: Authentication): Boolean {
         val currentUser = authentication.principal as? UserEntity ?: return false
 
@@ -56,21 +63,39 @@ class SecurityServiceImpl(
         }
     }
 
+    override fun isCompanyOwner(companyId: UUID): Boolean {
+        val authentication = SecurityContextHolder.getContext().authentication ?: return false
+        return isCompanyOwner(companyId, authentication)
+    }
+
+    override fun isVacancyOwner(
+        vacancyId: UUID,
+        authentication: Authentication
+    ): Boolean {
+        val currentUser = authentication.principal as? UserEntity ?: return false
+
+        return when (currentUser.userType) {
+            UserType.COMPANY -> {
+                val companyProfileId =
+                    getCompanyProfileId(currentUser.userId) ?: throw RuntimeException("Company not found")
+                vacancyId in vacancyService.getVacancyByCompanyId(companyProfileId).map { it.id }
+            }
+            UserType.STUDENT -> {
+                false
+            }
+        }
+    }
+
+    override fun isVacancyOwner(vacancyId: UUID): Boolean {
+        val authentication = SecurityContextHolder.getContext().authentication ?: return false
+        return isVacancyOwner(vacancyId, authentication)
+    }
+
     private fun getStudentProfileId(userId: UUID): UUID? {
         return studentService.getStudent(userId).id
     }
 
     private fun getCompanyProfileId(userId: UUID): UUID? {
         return companyService.getCompany(userId).id
-    }
-
-    override fun isStudentOwner(studentId: UUID): Boolean {
-        val authentication = SecurityContextHolder.getContext().authentication ?: return false
-        return isStudentOwner(studentId, authentication)
-    }
-
-    override fun isCompanyOwner(companyId: UUID): Boolean {
-        val authentication = SecurityContextHolder.getContext().authentication ?: return false
-        return isCompanyOwner(companyId, authentication)
     }
 }

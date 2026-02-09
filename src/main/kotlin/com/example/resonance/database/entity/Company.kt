@@ -28,9 +28,13 @@ data class Company (
     @ManyToMany(mappedBy = "companies")
     var socialProfiles: MutableSet<SocialProfile> = mutableSetOf()
 
+    @ManyToMany(mappedBy = "companies")
+    var vacancies: MutableSet<Vacancy> = mutableSetOf()
+
     @PreRemove
     fun preRemove() {
         activities.toList().forEach { it.companies.remove(this) }
         socialProfiles.toList().forEach { it.companies.remove(this) }
+        vacancies.toList().forEach { it.companies.remove(this) }
     }
 }

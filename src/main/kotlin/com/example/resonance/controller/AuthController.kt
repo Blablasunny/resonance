@@ -3,7 +3,7 @@ package com.example.resonance.controller
 import com.example.resonance.model.schema.dto.AuthDto
 import com.example.resonance.model.schema.dto.RegisterDto
 import com.example.resonance.model.schema.request.RegisterRq
-import com.example.resonance.model.schema.request.UpsertAuthRq
+import com.example.resonance.model.schema.request.AuthRq
 import com.example.resonance.service.AuthService
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
@@ -22,7 +22,7 @@ class AuthController(
 ) {
 
     @PostMapping("/login")
-    fun login(@Valid @RequestBody request: UpsertAuthRq): ResponseEntity<AuthDto> {
+    fun login(@Valid @RequestBody request: AuthRq): ResponseEntity<AuthDto> {
         val response = authService.authenticate(request)
         return ResponseEntity.ok(response)
     }

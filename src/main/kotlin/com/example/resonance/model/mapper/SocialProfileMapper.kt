@@ -9,7 +9,6 @@ fun SocialProfile.toDto() = SocialProfileDto(
     id = id,
     platformLink = platformLink,
     platformName = platformName,
-    description = description,
     createdAt = createdAt,
     updatedAt = updatedAt,
     students = students.map { it.toDto() },
@@ -19,13 +18,11 @@ fun SocialProfile.toDto() = SocialProfileDto(
 fun UpsertSocialProfileRq.toEntity() = SocialProfile(
     platformLink = platformLink,
     platformName = platformName,
-    description = description,
 )
 
 fun SocialProfile.update(rq: UpsertSocialProfileRq): SocialProfile =
     this.apply {
         platformLink = rq.platformLink
         platformName = rq.platformName
-        description = rq.description
         updatedAt = LocalDateTime.now()
     }

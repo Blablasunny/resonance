@@ -22,7 +22,7 @@ class SphereOfInterestServiceImpl(
     private val studentService: StudentService,
 ): SphereOfInterestService {
     override fun getSphereOfInterestByStudentId(studentId: UUID): List<SphereOfInterestDto> =
-        sphereOfInterestDao.findSphereOfInterestByStudents(studentService.getStudent(studentId)).map { it.toDto() }
+        sphereOfInterestDao.findSpheresOfInterestByStudents(studentService.getStudent(studentId)).map { it.toDto() }
 
     override fun getSphereOfInterest(id: UUID): SphereOfInterest =
         sphereOfInterestDao.findById(id).getOrElse { throw RuntimeException("Sphere of interest with id $id not found!") }

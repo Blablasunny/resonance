@@ -4,5 +4,5 @@ import com.example.resonance.database.entity.OccupationOfInterest
 import com.example.resonance.database.entity.Student
 
 interface OccupationOfInterestDao: AbstractDao<OccupationOfInterest>  {
-    fun findOccupationOfInterestByStudents(students: Student): MutableList<OccupationOfInterest>
+    fun findOccupationsOfInterestByStudents(students: Student): MutableList<OccupationOfInterest>
 }

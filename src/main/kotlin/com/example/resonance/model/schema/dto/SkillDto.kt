@@ -1,6 +1,5 @@
 package com.example.resonance.model.schema.dto
 
-import com.example.resonance.database.entity.Student
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -10,5 +9,6 @@ data class SkillDto(
     val skillCategory: String,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime,
-    val students: List<StudentDto>
+    val students: List<StudentDto>,
+    val vacancies: List<VacancyDto>
 )

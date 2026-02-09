@@ -8,7 +8,9 @@ interface SecurityService {
     fun isOwner(id: UUID, authentication: Authentication): Boolean
     fun isOwner(id: UUID): Boolean
     fun isStudentOwner(studentId: UUID, authentication: Authentication): Boolean
-    fun isCompanyOwner(companyId: UUID, authentication: Authentication): Boolean
     fun isStudentOwner(studentId: UUID): Boolean
+    fun isCompanyOwner(companyId: UUID, authentication: Authentication): Boolean
     fun isCompanyOwner(companyId: UUID): Boolean
+    fun isVacancyOwner(vacancyId: UUID, authentication: Authentication): Boolean
+    fun isVacancyOwner(vacancyId: UUID): Boolean
 }

@@ -16,6 +16,7 @@ import com.example.resonance.service.AchievementService
 import com.example.resonance.service.EducationService
 import com.example.resonance.service.ExperienceService
 import com.example.resonance.service.OccupationOfInterestService
+import com.example.resonance.service.SkillOwner
 import com.example.resonance.service.SkillService
 import com.example.resonance.service.SocialProfileService
 import com.example.resonance.service.SphereOfInterestService
@@ -207,15 +208,15 @@ class StudentController(
     @PreAuthorize("@securityService.isStudentOwner(#studentId)")
     @PostMapping("/skills/{studentId}")
     fun addSkill(@PathVariable("studentId") studentId: UUID, @RequestBody rq: UpsertSkillRq) =
-        skillService.addSkill(studentId, rq)
+        skillService.addSkill(studentId, rq, SkillOwner.STUDENT)
 
     @PreAuthorize("@securityService.isStudentOwner(#studentId)")
     @PostMapping("/skills/{studentId}/{id}")
     fun changeSkill(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID, @RequestBody rq: UpsertSkillRq) =
-        skillService.changeSkill(id, rq, studentId)
+        skillService.changeSkill(id, rq, studentId, SkillOwner.STUDENT)
 
     @PreAuthorize("@securityService.isStudentOwner(#studentId)")
     @DeleteMapping("/skills/{studentId}/{id}")
     fun deleteSkill(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID) =
-        skillService.deleteSkill(id, studentId)
+        skillService.deleteSkill(id, studentId, SkillOwner.STUDENT)
 }

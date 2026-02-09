@@ -21,7 +21,7 @@ class OccupationOfInterestServiceImpl(
     private val occupationOfInterestDao: OccupationOfInterestDao,
 ): OccupationOfInterestService {
     override fun getOccupationOfInterestByStudentId(studentId: UUID): List<OccupationOfInterestDto> =
-        occupationOfInterestDao.findOccupationOfInterestByStudents(studentService.getStudent(studentId)).map { it.toDto() }
+        occupationOfInterestDao.findOccupationsOfInterestByStudents(studentService.getStudent(studentId)).map { it.toDto() }
 
     override fun getOccupationOfInterest(id: UUID): OccupationOfInterest =
         occupationOfInterestDao.findById(id).getOrElse { throw RuntimeException("Occupation of interest  with id $id not found!") }

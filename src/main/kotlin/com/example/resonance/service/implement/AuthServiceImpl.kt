@@ -5,12 +5,11 @@ import com.example.resonance.database.dao.StudentDao
 import com.example.resonance.database.dao.UserDao
 import com.example.resonance.database.entity.UserEntity
 import com.example.resonance.database.entity.UserType
-import com.example.resonance.model.mapper.toDto
 import com.example.resonance.model.mapper.toEntity
 import com.example.resonance.model.schema.dto.AuthDto
 import com.example.resonance.model.schema.dto.RegisterDto
 import com.example.resonance.model.schema.request.RegisterRq
-import com.example.resonance.model.schema.request.UpsertAuthRq
+import com.example.resonance.model.schema.request.AuthRq
 import com.example.resonance.security.JwtUtil
 import com.example.resonance.service.AuthService
 import com.example.resonance.service.CompanyService
@@ -31,7 +30,7 @@ class AuthServiceImpl(
     private val companyDao: CompanyDao
 ): AuthService {
 
-    override fun authenticate(request: UpsertAuthRq): AuthDto {
+    override fun authenticate(request: AuthRq): AuthDto {
         val user = userDao.findByEmail(request.email)
             ?: throw BadCredentialsException("Invalid credentials")
 

@@ -17,9 +17,6 @@ data class SocialProfile(
     @Lob
     @Column(name = "platform_link", nullable = false)
     var platformLink: String,
-    @Lob
-    @Column(name = "description")
-    var description: String?,
 ): AbstractEntity() {
     @ManyToMany
     @JoinTable(

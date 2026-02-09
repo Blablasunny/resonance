@@ -11,7 +11,8 @@ fun Skill.toDto() = SkillDto(
     skillCategory = skillCategory,
     createdAt = createdAt,
     updatedAt = updatedAt,
-    students = students.map { it.toDto() }
+    students = students.map { it.toDto() },
+    vacancies = vacancies.map { it.toDto() },
 )
 
 fun UpsertSkillRq.toEntity() = Skill(

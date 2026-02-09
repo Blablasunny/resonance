@@ -7,7 +7,6 @@ data class SocialProfileDto(
     val id: UUID?,
     val platformName: String,
     val platformLink: String,
-    val description: String?,
     val createdAt : LocalDateTime,
     val updatedAt : LocalDateTime,
     val students: List<StudentDto>,
