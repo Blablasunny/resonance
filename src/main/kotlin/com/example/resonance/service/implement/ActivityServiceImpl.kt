@@ -26,6 +26,8 @@ class ActivityServiceImpl(
     override fun getActivity(id: UUID): Activity =
         activityDao.findById(id).getOrElse { throw RuntimeException("Activity with id $id found!") }
 
+    override fun getActivityById(id: UUID): ActivityDto = getActivity(id).toDto()
+
     override fun getActivities(): List<ActivityDto> = activityDao.findAll().map { it.toDto() }
 
     override fun addActivity(

@@ -29,6 +29,8 @@ class VacancyServiceImpl(
     override fun getVacancy(id: UUID): Vacancy =
         vacancyDao.findById(id).getOrElse { throw RuntimeException("Vacancy with id $id not found!") }
 
+    override fun getVacancyById(id: UUID): VacancyDto = getVacancy(id).toDto()
+
     override fun getVacancies(): List<VacancyDto> = vacancyDao.findAll().map { it.toDto() }
 
     override fun getOpenVacancies(): List<VacancyDto> =

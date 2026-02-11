@@ -9,6 +9,7 @@ interface VacancyService{
     fun getVacancyByCompanyId(companyId: UUID): List<VacancyDto>
     fun getOpenVacancyByCompanyId(companyId: UUID): List<VacancyDto>
     fun getVacancy(id: UUID): Vacancy
+    fun getVacancyById(id: UUID): VacancyDto
     fun getVacancies(): List<VacancyDto>
     fun getOpenVacancies(): List<VacancyDto>
     fun addVacancy(companyId: UUID, rq: UpsertVacancyRq): VacancyDto

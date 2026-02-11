@@ -8,6 +8,7 @@ import java.util.UUID
 interface ActivityService {
     fun getActivityByCompanyId(companyId: UUID): List<ActivityDto>
     fun getActivity(id: UUID): Activity
+    fun getActivityById(id: UUID): ActivityDto
     fun getActivities(): List<ActivityDto>
     fun addActivity(companyId: UUID, rq: UpsertActivityRq): ActivityDto
     fun changeActivity(id: UUID, rq: UpsertActivityRq, companyId: UUID): ActivityDto

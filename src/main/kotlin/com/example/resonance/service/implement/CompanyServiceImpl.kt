@@ -10,9 +10,11 @@ import com.example.resonance.model.mapper.toEntity
 import com.example.resonance.model.mapper.update
 import com.example.resonance.service.CompanyService
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 import kotlin.jvm.optionals.getOrElse
 
+@Transactional
 @Service
 class CompanyServiceImpl(
     private val companyDao: CompanyDao,

@@ -2,8 +2,10 @@ package com.example.resonance.controller
 
 import com.example.resonance.database.entity.UserType
 import com.example.resonance.model.mapper.toDto
+import com.example.resonance.model.schema.dto.ActivityDto
 import com.example.resonance.model.schema.request.UpsertCompanyRq
 import com.example.resonance.model.schema.dto.CompanyDto
+import com.example.resonance.model.schema.dto.VacancyDto
 import com.example.resonance.model.schema.request.UpsertActivityRq
 import com.example.resonance.model.schema.request.UpsertResponsibilityRq
 import com.example.resonance.model.schema.request.UpsertSkillRq
@@ -53,6 +55,13 @@ class CompanyController(
     fun deleteCompany(@PathVariable("id") id: UUID) = companyService.deleteCompany(id)
 
 
+    @GetMapping("/activities")
+    fun getActivities(): List<ActivityDto> = activityService.getActivities()
+
+    @GetMapping("/activities/view/{id}")
+    fun getActivityById(@PathVariable("id") id: UUID): ActivityDto =
+        activityService.getActivityById(id)
+
     @GetMapping("/activities/{companyId}")
     fun getActivityByCompanyId(@PathVariable("companyId") companyId: UUID) =
         activityService.getActivityByCompanyId(companyId)
@@ -92,6 +101,16 @@ class CompanyController(
     fun deleteSocialProfile(@PathVariable("companyId") companyId: UUID, @PathVariable("id") id: UUID) =
         socialProfileService.deleteSocialProfile(id, companyId, UserType.COMPANY)
 
+
+    @GetMapping("/vacancies")
+    fun getVacancies(): List<VacancyDto> = vacancyService.getVacancies()
+
+    @GetMapping("/vacancies/open")
+    fun getOpenVacancies(): List<VacancyDto> = vacancyService.getOpenVacancies()
+
+    @GetMapping("/vacancies/view/{id}")
+    fun getVacancyById(@PathVariable("id") id: UUID): VacancyDto =
+        vacancyService.getVacancyById(id)
 
     @GetMapping("/vacancies/{companyId}")
     fun getVacancyByCompanyId(@PathVariable("companyId") companyId: UUID) =
