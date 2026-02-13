@@ -48,6 +48,7 @@ class EducationServiceImpl(
         studentId: UUID
     ): EducationDto {
         val education = rq.toEntity()
+        if (education == getEducation(id)) return getEducation(id).toDto()
         deleteEducation(id, studentId)
         for (ed in educationDao.findAll()) {
             if (education == ed) {
@@ -65,6 +66,7 @@ class EducationServiceImpl(
         val student = studentService.getStudent(studentId)
         student.educations.remove(education)
         education.students.remove(student)
+        if (education.students.isEmpty()) educationDao.delete(education)
     }
 
     private fun createEducation(rq: UpsertEducationRq, studentId: UUID): EducationDto {

@@ -47,6 +47,7 @@ class AchievementServiceImpl(
         studentId: UUID
     ): AchievementDto {
         val achievement = rq.toEntity()
+        if (achievement == getAchievement(id)) return getAchievement(id).toDto()
         deleteAchievement(id, studentId)
         for (ach in achievementDao.findAll()) {
             if (achievement == ach) {
@@ -64,6 +65,7 @@ class AchievementServiceImpl(
         val student = studentService.getStudent(studentId)
         student.achievements.remove(achievement)
         achievement.students.remove(student)
+        if (achievement.students.isEmpty()) achievementDao.delete(achievement)
     }
 
     private fun createAchievement(rq: UpsertAchievementRq, studentId: UUID): AchievementDto {

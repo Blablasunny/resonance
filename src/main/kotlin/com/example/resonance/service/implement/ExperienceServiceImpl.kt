@@ -48,6 +48,7 @@ class ExperienceServiceImpl(
         studentId: UUID
     ): ExperienceDto {
         val experience = rq.toEntity()
+        if (experience == getExperience(studentId)) return getExperience(id).toDto()
         deleteExperience(id, studentId)
         for (exp in experienceDao.findAll()) {
             if (experience == exp) {
@@ -65,6 +66,7 @@ class ExperienceServiceImpl(
         val student = studentService.getStudent(studentId)
         student.experiences.remove(experience)
         experience.students.remove(student)
+        if (experience.students.isEmpty()) experienceDao.delete(experience)
     }
 
     private fun createExperience(studentId: UUID, rq: UpsertExperienceRq): ExperienceDto {

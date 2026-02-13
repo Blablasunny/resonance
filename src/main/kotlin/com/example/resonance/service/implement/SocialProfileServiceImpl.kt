@@ -55,6 +55,7 @@ class SocialProfileServiceImpl(
         userType: UserType
     ): SocialProfileDto {
         val socialProfile = rq.toEntity()
+        if (socialProfile == getSocialProfile(id)) return getSocialProfile(id).toDto()
         deleteSocialProfile(id, userId, userType)
         for (social in socialProfileDao.findAll()) {
             if (socialProfile == social) {
@@ -85,6 +86,7 @@ class SocialProfileServiceImpl(
                 socialProfile.companies.remove(company)
             }
         }
+        if (socialProfile.students.isEmpty() && socialProfile.companies.isEmpty()) socialProfileDao.delete(socialProfile)
     }
 
     private fun createSocialProfile(rq: UpsertSocialProfileRq, userId: UUID, userType: UserType): SocialProfileDto {

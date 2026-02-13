@@ -6,6 +6,8 @@ import com.example.resonance.model.mapper.toDto
 import com.example.resonance.model.mapper.toEntity
 import com.example.resonance.model.mapper.update
 import com.example.resonance.model.schema.dto.SkillDto
+import com.example.resonance.model.schema.dto.SubjectDto
+import com.example.resonance.model.schema.request.IdsRq
 import com.example.resonance.model.schema.request.UpsertSkillRq
 import com.example.resonance.service.SkillOwner
 import com.example.resonance.service.SkillService
@@ -32,7 +34,19 @@ class SkillServiceImpl(
     override fun getSkill(id: UUID): Skill =
         skillDao.findById(id).getOrElse { throw RuntimeException("Skill with id $id not found!") }
 
+    override fun getSkillById(id: UUID): SkillDto = getSkill(id).toDto()
+
     override fun getSkills(): List<SkillDto> = skillDao.findAll().map { it.toDto() }
+
+    override fun getSkillsByIds(rq: IdsRq): List<SkillDto> {
+        val skills: MutableList<SkillDto> = arrayListOf()
+        for (id in rq.ids) {
+            val skillDto = getSkillById(id)
+            if (skillDto !in skills)
+                skills.add(skillDto)
+        }
+        return skills
+    }
 
     override fun addSkill(
         ownerId: UUID,
@@ -55,6 +69,7 @@ class SkillServiceImpl(
         skillOwner: SkillOwner
     ): SkillDto {
         val skill = rq.toEntity()
+        if (skill == getSkill(id)) return getSkillById(id)
         deleteSkill(id, ownerId, skillOwner)
         for (sk in skillDao.findAll()) {
             if (skill == sk) {
@@ -85,6 +100,7 @@ class SkillServiceImpl(
                 skill.vacancies.remove(vacancy)
             }
         }
+        if (skill.students.isEmpty() && skill.vacancies.isEmpty()) skillDao.delete(skill)
     }
 
     private fun createSkill(rq: UpsertSkillRq, ownerId: UUID, skillOwner: SkillOwner): SkillDto {

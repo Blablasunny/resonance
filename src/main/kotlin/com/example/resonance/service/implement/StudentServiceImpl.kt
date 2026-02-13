@@ -2,12 +2,15 @@ package com.example.resonance.service.implement
 
 import com.example.resonance.database.dao.StudentDao
 import com.example.resonance.database.dao.UserDao
+import com.example.resonance.database.entity.ProfessionGrade
 import com.example.resonance.database.entity.Student
 import com.example.resonance.model.schema.request.UpsertStudentRq
 import com.example.resonance.model.schema.dto.StudentDto
 import com.example.resonance.model.mapper.toDto
 import com.example.resonance.model.mapper.toEntity
 import com.example.resonance.model.mapper.update
+import com.example.resonance.model.schema.dto.SubjectDto
+import com.example.resonance.model.schema.request.GradeRq
 import com.example.resonance.service.StudentService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -25,6 +28,19 @@ class StudentServiceImpl(
 
     override fun getStudent(id: UUID): Student =
         studentDao.findById(id).getOrElse { throw RuntimeException("student not found") }
+
+    override fun getStudentById(id: UUID): StudentDto = getStudent(id).toDto()
+
+    override fun getStudentsByGrades(rq: GradeRq): List<StudentDto> {
+        val students: MutableList<StudentDto> = arrayListOf()
+        for (student in getStudents()) {
+            if (student.professionGrade in rq.grades) students.add(student)
+        }
+        return students
+    }
+
+    override fun getGrades(): List<ProfessionGrade> =
+        ProfessionGrade.entries
 
     override fun createStudent(rq: UpsertStudentRq): StudentDto =
         studentDao.save(rq.toEntity()).toDto()

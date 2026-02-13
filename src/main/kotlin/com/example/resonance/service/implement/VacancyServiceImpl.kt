@@ -1,5 +1,7 @@
 package com.example.resonance.service.implement
 
+import com.example.resonance.database.dao.ResponsibilityDao
+import com.example.resonance.database.dao.SkillDao
 import com.example.resonance.database.dao.VacancyDao
 import com.example.resonance.database.entity.Vacancy
 import com.example.resonance.model.mapper.toDto
@@ -19,6 +21,8 @@ import kotlin.jvm.optionals.getOrElse
 class VacancyServiceImpl(
     private val vacancyDao: VacancyDao,
     private val companyService: CompanyService,
+    private val skillDao: SkillDao,
+    private val responsibilityDao: ResponsibilityDao,
 ): VacancyService {
     override fun getVacancyByCompanyId(companyId: UUID): List<VacancyDto> =
         vacancyDao.findVacanciesByCompanies(companyService.getCompany(companyId)).map { it.toDto() }
@@ -55,6 +59,7 @@ class VacancyServiceImpl(
         companyId: UUID
     ): VacancyDto {
         val vacancy = rq.toEntity()
+        if (vacancy == getVacancy(id)) getVacancyById(id)
         deleteVacancy(id, companyId)
         for (vac in vacancyDao.findAll()) {
             if (vacancy == vac) {
@@ -72,6 +77,11 @@ class VacancyServiceImpl(
         val company = companyService.getCompany(companyId)
         company.vacancies.remove(vacancy)
         vacancy.companies.remove(company)
+        val skills = vacancy.skills
+        val responsibilities = vacancy.responsibilities
+        if (vacancy.companies.isEmpty()) vacancyDao.delete(vacancy)
+        skills.forEach {if (it.vacancies.isEmpty() && it.students.isEmpty()) skillDao.delete(it) }
+        responsibilities.forEach {if (it.vacancies.isEmpty()) responsibilityDao.delete(it) }
     }
 
     private fun createVacancy(rq: UpsertVacancyRq, companyId: UUID): VacancyDto {

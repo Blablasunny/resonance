@@ -47,6 +47,7 @@ class ResponsibilityServiceImpl(
         vacancyId: UUID
     ): ResponsibilityDto {
         val responsibility = rq.toEntity()
+        if (responsibility == getResponsibility(id)) return getResponsibility(id).toDto()
         deleteResponsibility(id, vacancyId)
         for (resp in responsibilityDao.findAll()) {
             if (responsibility == resp) {
@@ -64,6 +65,7 @@ class ResponsibilityServiceImpl(
         val vacancy = vacancyService.getVacancy(vacancyId)
         vacancy.responsibilities.remove(responsibility)
         responsibility.vacancies.remove(vacancy)
+        if (responsibility.vacancies.isEmpty()) responsibilityDao.delete(responsibility)
     }
 
     private fun createResponsibility(rq: UpsertResponsibilityRq, vacancyId: UUID): ResponsibilityDto {

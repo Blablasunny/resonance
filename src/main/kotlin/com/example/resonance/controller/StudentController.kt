@@ -2,7 +2,13 @@ package com.example.resonance.controller
 
 import com.example.resonance.database.entity.UserType
 import com.example.resonance.model.mapper.toDto
+import com.example.resonance.model.schema.dto.OccupationOfInterestDto
+import com.example.resonance.model.schema.dto.SkillDto
+import com.example.resonance.model.schema.dto.SphereOfInterestDto
 import com.example.resonance.model.schema.dto.StudentDto
+import com.example.resonance.model.schema.dto.SubjectDto
+import com.example.resonance.model.schema.request.GradeRq
+import com.example.resonance.model.schema.request.IdsRq
 import com.example.resonance.model.schema.request.UpsertAchievementRq
 import com.example.resonance.model.schema.request.UpsertEducationRq
 import com.example.resonance.model.schema.request.UpsertExperienceRq
@@ -49,7 +55,7 @@ class StudentController(
     fun getStudents(): List<StudentDto> = studentService.getStudents()
 
     @GetMapping("/{id}")
-    fun getStudent(@PathVariable("id") id: UUID) = studentService.getStudent(id).toDto()
+    fun getStudent(@PathVariable("id") id: UUID) = studentService.getStudentById(id)
 
     @PreAuthorize("@securityService.isStudentOwner(#id)")
     @PostMapping("/{id}")
@@ -59,6 +65,13 @@ class StudentController(
     @PreAuthorize("@securityService.isStudentOwner(#id)")
     @DeleteMapping("/{id}")
     fun deleteStudent(@PathVariable("id") id: UUID) = studentService.deleteStudent(id)
+
+
+    @GetMapping("/grades")
+    fun getGrades() = studentService.getGrades()
+
+    @GetMapping("/grades/ids")
+    fun getGrades(@RequestBody rq: GradeRq) = studentService.getStudentsByGrades(rq)
 
 
     @GetMapping("/educations/{studentId}")
@@ -121,6 +134,13 @@ class StudentController(
         experienceService.deleteExperience(id, studentId)
 
 
+    @GetMapping("/subjects")
+    fun getSubjects(): List<SubjectDto> = subjectService.getSubjects()
+
+    @GetMapping("/subjects/ids")
+    fun getSubjectsByIds(@RequestBody rq: IdsRq): List<SubjectDto> =
+        subjectService.getSubjectsByIds(rq)
+
     @GetMapping("/subjects/{studentId}")
     fun getSubjectByStudentId(@PathVariable("studentId") studentId: UUID) =
         subjectService.getSubjectByStudentId(studentId)
@@ -141,6 +161,13 @@ class StudentController(
         subjectService.deleteSubject(id, studentId)
 
 
+    @GetMapping("/sphere-of-interests")
+    fun getSpereOfInterests(): List<SphereOfInterestDto> = sphereOfInterestService.getSphereOfInterests()
+
+    @GetMapping("/sphere-of-interests/ids")
+    fun getSpereOfInterestsByIds(@RequestBody rq: IdsRq): List<SphereOfInterestDto> =
+        sphereOfInterestService.getSphereOfInterestsByIds(rq)
+
     @GetMapping("/sphere-of-interests/{studentId}")
     fun getSphereOfInterestByStudentId(@PathVariable("studentId") studentId: UUID) =
         sphereOfInterestService.getSphereOfInterestByStudentId(studentId)
@@ -160,6 +187,13 @@ class StudentController(
     fun deleteSphereOfInterest(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID) =
         sphereOfInterestService.deleteSphereOfInterest(id, studentId)
 
+
+    @GetMapping("/occupation-of-interests")
+    fun getOccupationOfInterests(): List<OccupationOfInterestDto> = occupationOfInterestService.getOccupationOfInterests()
+
+    @GetMapping("/occupation-of-interests/ids")
+    fun getOccupationOfInterestsByIds(@RequestBody rq: IdsRq): List<OccupationOfInterestDto> =
+        occupationOfInterestService.getOccupationOfInterestsByIds(rq)
 
     @GetMapping("/occupation-of-interests/{studentId}")
     fun getOccupationOfInterestByStudentId(@PathVariable("studentId") studentId: UUID) =
@@ -200,6 +234,13 @@ class StudentController(
     fun deleteSocialProfile(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID) =
         socialProfileService.deleteSocialProfile(id, studentId, UserType.STUDENT)
 
+
+    @GetMapping("/skills")
+    fun getSkills(): List<SkillDto> = skillService.getSkills()
+
+    @GetMapping("/skills/ids")
+    fun getSkillsByIds(@RequestBody rq: IdsRq): List<SkillDto> =
+        skillService.getSkillsByIds(rq)
 
     @GetMapping("/skills/{studentId}")
     fun getSkillByStudentId(@PathVariable("studentId") studentId: UUID) =

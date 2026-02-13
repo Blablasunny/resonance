@@ -6,10 +6,10 @@ import com.example.resonance.model.mapper.toDto
 import com.example.resonance.model.mapper.toEntity
 import com.example.resonance.model.mapper.update
 import com.example.resonance.model.schema.dto.SphereOfInterestDto
+import com.example.resonance.model.schema.request.IdsRq
 import com.example.resonance.model.schema.request.UpsertSphereOfInterestRq
 import com.example.resonance.service.SphereOfInterestService
 import com.example.resonance.service.StudentService
-import com.sun.security.jgss.GSSUtil.createSubject
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
@@ -27,7 +27,19 @@ class SphereOfInterestServiceImpl(
     override fun getSphereOfInterest(id: UUID): SphereOfInterest =
         sphereOfInterestDao.findById(id).getOrElse { throw RuntimeException("Sphere of interest with id $id not found!") }
 
+    override fun getSphereOfInterestById(id: UUID): SphereOfInterestDto = getSphereOfInterest(id).toDto()
+
     override fun getSphereOfInterests(): List<SphereOfInterestDto> = sphereOfInterestDao.findAll().map { it.toDto() }
+
+    override fun getSphereOfInterestsByIds(rq: IdsRq): List<SphereOfInterestDto> {
+        val sphereOfInterests: MutableList<SphereOfInterestDto> = arrayListOf()
+        for (id in rq.ids) {
+            val sphereOfInterestDto = getSphereOfInterestById(id)
+            if (sphereOfInterestDto !in sphereOfInterests)
+                sphereOfInterests.add(sphereOfInterestDto)
+        }
+        return sphereOfInterests
+    }
 
     override fun addSphereOfInterest(
         studentId: UUID,
@@ -48,6 +60,7 @@ class SphereOfInterestServiceImpl(
         studentId: UUID
     ): SphereOfInterestDto {
         val sphereOfInterest = rq.toEntity()
+        if (sphereOfInterest == getSphereOfInterest(id)) return getSphereOfInterestById(id)
         deleteSphereOfInterest(id, studentId)
         for (sphere in sphereOfInterestDao.findAll()) {
             if (sphereOfInterest == sphere) {
@@ -65,6 +78,7 @@ class SphereOfInterestServiceImpl(
         val student = studentService.getStudent(studentId)
         student.sphereOfInterests.remove(spereOfInterest)
         spereOfInterest.students.remove(student)
+        if (spereOfInterest.students.isEmpty()) sphereOfInterestDao.delete(spereOfInterest)
     }
 
     private fun createSphereOfInterest(rq: UpsertSphereOfInterestRq, studentId: UUID): SphereOfInterestDto {

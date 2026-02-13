@@ -6,6 +6,8 @@ import com.example.resonance.model.mapper.toDto
 import com.example.resonance.model.mapper.toEntity
 import com.example.resonance.model.mapper.update
 import com.example.resonance.model.schema.dto.OccupationOfInterestDto
+import com.example.resonance.model.schema.dto.SphereOfInterestDto
+import com.example.resonance.model.schema.request.IdsRq
 import com.example.resonance.model.schema.request.UpsertOccupationOfInterestRq
 import com.example.resonance.service.OccupationOfInterestService
 import com.example.resonance.service.StudentService
@@ -26,7 +28,19 @@ class OccupationOfInterestServiceImpl(
     override fun getOccupationOfInterest(id: UUID): OccupationOfInterest =
         occupationOfInterestDao.findById(id).getOrElse { throw RuntimeException("Occupation of interest  with id $id not found!") }
 
+    override fun getOccupationOfInterestById(id: UUID): OccupationOfInterestDto = getOccupationOfInterest(id).toDto()
+
     override fun getOccupationOfInterests(): List<OccupationOfInterestDto> = occupationOfInterestDao.findAll().map { it.toDto() }
+
+    override fun getOccupationOfInterestsByIds(rq: IdsRq): List<OccupationOfInterestDto> {
+        val occupationOfInterests: MutableList<OccupationOfInterestDto> = arrayListOf()
+        for (id in rq.ids) {
+            val occupationOfInterestDto = getOccupationOfInterestById(id)
+            if (occupationOfInterestDto !in occupationOfInterests)
+                occupationOfInterests.add(occupationOfInterestDto)
+        }
+        return occupationOfInterests
+    }
 
     override fun addOccupationOfInterest(
         studentId: UUID,
@@ -47,6 +61,7 @@ class OccupationOfInterestServiceImpl(
         studentId: UUID
     ): OccupationOfInterestDto {
         val occupationOfInterest = rq.toEntity()
+        if (occupationOfInterest == getOccupationOfInterest(id)) return getOccupationOfInterestById(id)
         deleteOccupationOfInterest(id, studentId)
         for (sphere in occupationOfInterestDao.findAll()) {
             if (occupationOfInterest == sphere) {
@@ -64,6 +79,7 @@ class OccupationOfInterestServiceImpl(
         val student = studentService.getStudent(studentId)
         student.occupationOfInterests.remove(occupationOfInterest)
         occupationOfInterest.students.remove(student)
+        if (occupationOfInterest.students.isEmpty()) occupationOfInterestDao.delete(occupationOfInterest)
     }
 
     private fun createOccupationOfInterest(rq: UpsertOccupationOfInterestRq, studentId: UUID): OccupationOfInterestDto {

@@ -49,6 +49,7 @@ class ActivityServiceImpl(
         companyId: UUID
     ): ActivityDto {
         val activity = rq.toEntity()
+        if (activity == getActivity(id)) return getActivityById(id)
         deleteActivity(id, companyId)
         for (act in activityDao.findAll()) {
             if (activity == act) {
@@ -66,6 +67,7 @@ class ActivityServiceImpl(
         val company = companyService.getCompany(companyId)
         company.activities.remove(activity)
         activity.companies.remove(company)
+        if (activity.companies.isEmpty()) activityDao.delete(activity)
     }
 
     private fun createActivity(rq: UpsertActivityRq, companyId: UUID): ActivityDto {

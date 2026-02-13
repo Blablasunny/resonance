@@ -8,6 +8,7 @@ import java.util.UUID
 interface CompanyService {
     fun getCompanies(): List<CompanyDto>
     fun getCompany(id : UUID): Company
+    fun getCompanyById(id : UUID): CompanyDto
     fun createCompany(rq: UpsertCompanyRq): CompanyDto
     fun updateCompany(id: UUID, rq: UpsertCompanyRq): CompanyDto
     fun deleteCompany(id: UUID)

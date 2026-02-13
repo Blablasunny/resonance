@@ -43,7 +43,7 @@ class CompanyController(
     fun getCompanies(): List<CompanyDto> = companyService.getCompanies()
 
     @GetMapping("/{id}")
-    fun getCompany(@PathVariable("id") id: UUID) = companyService.getCompany(id).toDto()
+    fun getCompany(@PathVariable("id") id: UUID) = companyService.getCompanyById(id)
 
     @PreAuthorize("@securityService.isCompanyOwner(#id)")
     @PostMapping("/{id}")

@@ -26,6 +26,8 @@ class CompanyServiceImpl(
     override fun getCompany(id: UUID): Company =
         companyDao.findById(id).getOrElse { throw RuntimeException("company not found") }
 
+    override fun getCompanyById(id: UUID): CompanyDto = getCompany(id).toDto()
+
     override fun createCompany(rq: UpsertCompanyRq): CompanyDto =
         companyDao.save(rq.toEntity()).toDto()
 
