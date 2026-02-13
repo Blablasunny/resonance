@@ -30,11 +30,11 @@ class AuthServiceImpl(
     private val companyDao: CompanyDao
 ): AuthService {
 
-    override fun authenticate(request: AuthRq): AuthDto {
-        val user = userDao.findByEmail(request.email)
+    override fun authenticate(rq: AuthRq): AuthDto {
+        val user = userDao.findByEmail(rq.email)
             ?: throw BadCredentialsException("Invalid credentials")
 
-        if (!passwordEncoder.matches(request.password, user.password)) {
+        if (!passwordEncoder.matches(rq.password, user.password)) {
             throw BadCredentialsException("Invalid credentials")
         }
 
@@ -52,16 +52,16 @@ class AuthServiceImpl(
         return jwtUtil.validateToken(token)
     }
 
-    override fun register(request: RegisterRq): RegisterDto {
-        validateRegistrationRequest(request)
+    override fun register(rq: RegisterRq): RegisterDto {
+        validateRegistrationRequest(rq)
 
-        if (userDao.existsByEmail(request.email)) {
-            throw IllegalArgumentException("User with email ${request.email} already exists")
+        if (userDao.existsByEmail(rq.email)) {
+            throw IllegalArgumentException("User with email ${rq.email} already exists")
         }
 
-        val (profileId, profileDto) = createProfileWithExistingDto(request)
+        val (profileId, profileDto) = createProfileWithExistingDto(rq)
 
-        val user = createUserEntity(request, profileId)
+        val user = createUserEntity(rq, profileId)
         val savedUser = userDao.save(user)
 
         val token = jwtUtil.generateToken(savedUser)
@@ -71,39 +71,39 @@ class AuthServiceImpl(
             email = savedUser.email,
             userType = savedUser.userType,
             token = token,
-            message = "${request.userType} registered successfully",
+            message = "${rq.userType} registered successfully",
             profileId = profileId,
             profileData = profileDto
         )
     }
 
-    private fun validateRegistrationRequest(request: RegisterRq) {
-        if (request.password != request.confirmPassword) {
+    private fun validateRegistrationRequest(rq: RegisterRq) {
+        if (rq.password != rq.confirmPassword) {
             throw IllegalArgumentException("Passwords do not match")
         }
 
-        if (request.password.length < 8) {
+        if (rq.password.length < 8) {
             throw IllegalArgumentException("Password must be at least 8 characters")
         }
 
-        when (request.userType) {
+        when (rq.userType) {
             UserType.STUDENT -> {
-                if (request.studentData == null) {
+                if (rq.studentData == null) {
                     throw IllegalArgumentException("Student data is required for STUDENT type")
                 }
             }
             UserType.COMPANY -> {
-                if (request.companyData == null) {
+                if (rq.companyData == null) {
                     throw IllegalArgumentException("Company data is required for COMPANY type")
                 }
             }
         }
     }
 
-    private fun createProfileWithExistingDto(request: RegisterRq): Pair<UUID, Any> {
-        return when (request.userType) {
+    private fun createProfileWithExistingDto(rq: RegisterRq): Pair<UUID, Any> {
+        return when (rq.userType) {
             UserType.STUDENT -> {
-                val studentRq = request.studentData!!
+                val studentRq = rq.studentData!!
                 if (studentRq.toEntity() in studentDao.findAll()) {
                     throw IllegalArgumentException("This student data is already registered")
                 }
@@ -111,7 +111,7 @@ class AuthServiceImpl(
                 Pair(student.id!!, student)
             }
             UserType.COMPANY -> {
-                val companyRq = request.companyData!!
+                val companyRq = rq.companyData!!
                 if (companyRq.toEntity() in companyDao.findAll()) {
                     throw IllegalArgumentException("This company data is already registered")
                 }
@@ -121,12 +121,12 @@ class AuthServiceImpl(
         }
     }
 
-    private fun createUserEntity(request: RegisterRq, profileId: UUID): UserEntity {
-        val encryptedPassword = passwordEncoder.encode(request.password)!!
+    private fun createUserEntity(rq: RegisterRq, profileId: UUID): UserEntity {
+        val encryptedPassword = passwordEncoder.encode(rq.password)!!
         return UserEntity(
             userId = profileId,
-            userType = request.userType,
-            email = request.email,
+            userType = rq.userType,
+            email = rq.email,
             password = encryptedPassword,
             isActive = true
         )

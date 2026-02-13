@@ -22,14 +22,14 @@ class AuthController(
 ) {
 
     @PostMapping("/login")
-    fun login(@Valid @RequestBody request: AuthRq): ResponseEntity<AuthDto> {
-        val response = authService.authenticate(request)
+    fun login(@RequestBody rq: AuthRq): ResponseEntity<AuthDto> {
+        val response = authService.authenticate(rq)
         return ResponseEntity.ok(response)
     }
 
     @PostMapping("/register")
-    fun register(@Valid @RequestBody request: RegisterRq): ResponseEntity<RegisterDto> {
-        val response = authService.register(request)
+    fun register(@Valid @RequestBody rq: RegisterRq): ResponseEntity<RegisterDto> {
+        val response = authService.register(rq)
         return ResponseEntity.status(HttpStatus.CREATED).body(response)
     }
 

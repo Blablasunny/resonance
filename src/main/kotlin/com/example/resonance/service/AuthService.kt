@@ -6,7 +6,7 @@ import com.example.resonance.model.schema.request.RegisterRq
 import com.example.resonance.model.schema.request.AuthRq
 
 interface AuthService {
-    fun authenticate(request: AuthRq): AuthDto
+    fun authenticate(rq: AuthRq): AuthDto
     fun validateToken(token: String): Boolean
-    fun register(request: RegisterRq): RegisterDto
+    fun register(rq: RegisterRq): RegisterDto
 }

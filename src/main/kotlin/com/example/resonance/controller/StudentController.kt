@@ -28,6 +28,7 @@ import com.example.resonance.service.SocialProfileService
 import com.example.resonance.service.SphereOfInterestService
 import com.example.resonance.service.StudentService
 import com.example.resonance.service.SubjectService
+import jakarta.validation.Valid
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -80,12 +81,12 @@ class StudentController(
 
     @PreAuthorize("@securityService.isStudentOwner(#studentId)")
     @PostMapping("/educations/{studentId}")
-    fun addEducation(@PathVariable("studentId") studentId: UUID, @RequestBody rq: UpsertEducationRq) =
+    fun addEducation(@PathVariable("studentId") studentId: UUID, @Valid @RequestBody rq: UpsertEducationRq) =
         educationService.addEducation(studentId, rq)
 
     @PreAuthorize("@securityService.isStudentOwner(#studentId)")
     @PostMapping("/educations/{studentId}/{id}")
-    fun changeEducation(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID, @RequestBody rq: UpsertEducationRq) =
+    fun changeEducation(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID, @Valid @RequestBody rq: UpsertEducationRq) =
         educationService.changeEducation(id, rq, studentId)
 
     @PreAuthorize("@securityService.isStudentOwner(#studentId)")
@@ -100,12 +101,12 @@ class StudentController(
 
     @PreAuthorize("@securityService.isStudentOwner(#studentId)")
     @PostMapping("/achievements/{studentId}")
-    fun addAchievement(@PathVariable("studentId") studentId: UUID, @RequestBody rq: UpsertAchievementRq) =
+    fun addAchievement(@PathVariable("studentId") studentId: UUID, @Valid @RequestBody rq: UpsertAchievementRq) =
         achievementService.addAchievement(studentId, rq)
 
     @PreAuthorize("@securityService.isStudentOwner(#studentId)")
     @PostMapping("/achievements/{studentId}/{id}")
-    fun changeAchievement(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID, @RequestBody rq: UpsertAchievementRq) =
+    fun changeAchievement(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID, @Valid @RequestBody rq: UpsertAchievementRq) =
         achievementService.changeAchievement(id, rq, studentId)
 
     @PreAuthorize("@securityService.isStudentOwner(#studentId)")
@@ -120,12 +121,12 @@ class StudentController(
 
     @PreAuthorize("@securityService.isStudentOwner(#studentId)")
     @PostMapping("/experiences/{studentId}")
-    fun addExperience(@PathVariable("studentId") studentId: UUID, @RequestBody rq: UpsertExperienceRq) =
+    fun addExperience(@PathVariable("studentId") studentId: UUID, @Valid @RequestBody rq: UpsertExperienceRq) =
         experienceService.addExperience(studentId, rq)
 
     @PreAuthorize("@securityService.isStudentOwner(#studentId)")
     @PostMapping("/experiences/{studentId}/{id}")
-    fun changeExperience(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID, @RequestBody rq: UpsertExperienceRq) =
+    fun changeExperience(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID, @Valid @RequestBody rq: UpsertExperienceRq) =
         experienceService.changeExperience(id, rq, studentId)
 
     @PreAuthorize("@securityService.isStudentOwner(#studentId)")
@@ -147,12 +148,12 @@ class StudentController(
 
     @PreAuthorize("@securityService.isStudentOwner(#studentId)")
     @PostMapping("/subjects/{studentId}")
-    fun addSubject(@PathVariable("studentId") studentId: UUID, @RequestBody rq: UpsertSubjectRq) =
+    fun addSubject(@PathVariable("studentId") studentId: UUID, @Valid @RequestBody rq: UpsertSubjectRq) =
         subjectService.addSubject(studentId, rq)
 
     @PreAuthorize("@securityService.isStudentOwner(#studentId)")
     @PostMapping("/subjects/{studentId}/{id}")
-    fun changeSubject(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID, @RequestBody rq: UpsertSubjectRq) =
+    fun changeSubject(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID, @Valid @RequestBody rq: UpsertSubjectRq) =
         subjectService.changeSubject(id, rq, studentId)
 
     @PreAuthorize("@securityService.isStudentOwner(#studentId)")
@@ -174,12 +175,12 @@ class StudentController(
 
     @PreAuthorize("@securityService.isStudentOwner(#studentId)")
     @PostMapping("/sphere-of-interests/{studentId}")
-    fun addSphereOfInterest(@PathVariable("studentId") studentId: UUID, @RequestBody rq: UpsertSphereOfInterestRq) =
+    fun addSphereOfInterest(@PathVariable("studentId") studentId: UUID, @Valid @RequestBody rq: UpsertSphereOfInterestRq) =
         sphereOfInterestService.addSphereOfInterest(studentId, rq)
 
     @PreAuthorize("@securityService.isStudentOwner(#studentId)")
     @PostMapping("/sphere-of-interests/{studentId}/{id}")
-    fun changeSphereOfInterest(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID, @RequestBody rq: UpsertSphereOfInterestRq) =
+    fun changeSphereOfInterest(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID, @Valid @RequestBody rq: UpsertSphereOfInterestRq) =
         sphereOfInterestService.changeSphereOfInterest(id, rq, studentId)
 
     @PreAuthorize("@securityService.isStudentOwner(#studentId)")
@@ -201,12 +202,12 @@ class StudentController(
 
     @PreAuthorize("@securityService.isStudentOwner(#studentId)")
     @PostMapping("/occupation-of-interests/{studentId}")
-    fun addOccupationOfInterest(@PathVariable("studentId") studentId: UUID, @RequestBody rq: UpsertOccupationOfInterestRq) =
+    fun addOccupationOfInterest(@PathVariable("studentId") studentId: UUID, @Valid @RequestBody rq: UpsertOccupationOfInterestRq) =
         occupationOfInterestService.addOccupationOfInterest(studentId, rq)
 
     @PreAuthorize("@securityService.isStudentOwner(#studentId)")
     @PostMapping("/occupation-of-interests/{studentId}/{id}")
-    fun changeOccupationOfInterest(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID, @RequestBody rq: UpsertOccupationOfInterestRq) =
+    fun changeOccupationOfInterest(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID, @Valid @RequestBody rq: UpsertOccupationOfInterestRq) =
         occupationOfInterestService.changeOccupationOfInterest(id, rq, studentId)
 
     @PreAuthorize("@securityService.isStudentOwner(#studentId)")
@@ -221,12 +222,12 @@ class StudentController(
 
     @PreAuthorize("@securityService.isStudentOwner(#studentId)")
     @PostMapping("/social-profiles/{studentId}")
-    fun addSocialProfile(@PathVariable("studentId") studentId: UUID, @RequestBody rq: UpsertSocialProfileRq) =
+    fun addSocialProfile(@PathVariable("studentId") studentId: UUID, @Valid @RequestBody rq: UpsertSocialProfileRq) =
         socialProfileService.addSocialProfile(studentId, rq, UserType.STUDENT)
 
     @PreAuthorize("@securityService.isStudentOwner(#studentId)")
     @PostMapping("/social-profiles/{studentId}/{id}")
-    fun changeSocialProfile(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID, @RequestBody rq: UpsertSocialProfileRq) =
+    fun changeSocialProfile(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID, @Valid @RequestBody rq: UpsertSocialProfileRq) =
         socialProfileService.changeSocialProfile(id, rq, studentId, UserType.STUDENT)
 
     @PreAuthorize("@securityService.isStudentOwner(#studentId)")
@@ -248,12 +249,12 @@ class StudentController(
 
     @PreAuthorize("@securityService.isStudentOwner(#studentId)")
     @PostMapping("/skills/{studentId}")
-    fun addSkill(@PathVariable("studentId") studentId: UUID, @RequestBody rq: UpsertSkillRq) =
+    fun addSkill(@PathVariable("studentId") studentId: UUID, @Valid @RequestBody rq: UpsertSkillRq) =
         skillService.addSkill(studentId, rq, SkillOwner.STUDENT)
 
     @PreAuthorize("@securityService.isStudentOwner(#studentId)")
     @PostMapping("/skills/{studentId}/{id}")
-    fun changeSkill(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID, @RequestBody rq: UpsertSkillRq) =
+    fun changeSkill(@PathVariable("studentId") studentId: UUID, @PathVariable("id") id: UUID, @Valid @RequestBody rq: UpsertSkillRq) =
         skillService.changeSkill(id, rq, studentId, SkillOwner.STUDENT)
 
     @PreAuthorize("@securityService.isStudentOwner(#studentId)")

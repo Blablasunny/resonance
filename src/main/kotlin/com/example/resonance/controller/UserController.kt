@@ -6,6 +6,7 @@ import com.example.resonance.model.schema.request.EmailRq
 import com.example.resonance.model.schema.request.UpdateEmailRq
 import com.example.resonance.model.schema.request.UpdatePasswordRq
 import com.example.resonance.service.UserService
+import jakarta.validation.Valid
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -31,11 +32,11 @@ class UserController(
 
     @PreAuthorize("@securityService.isOwner(#id)")
     @PostMapping("/{id}/email")
-    fun updateEmail(@PathVariable id: UUID, @RequestBody rq: UpdateEmailRq): UpdateEmailDto =
+    fun updateEmail(@PathVariable id: UUID, @Valid @RequestBody rq: UpdateEmailRq): UpdateEmailDto =
         userService.updateEmail(id, rq)
 
     @PreAuthorize("@securityService.isOwner(#id)")
     @PostMapping("/{id}/password")
-    fun updatePassword(@PathVariable id: UUID, @RequestBody rq: UpdatePasswordRq): EmailDto =
+    fun updatePassword(@PathVariable id: UUID, @Valid @RequestBody rq: UpdatePasswordRq): EmailDto =
         userService.updatePassword(id, rq)
 }
