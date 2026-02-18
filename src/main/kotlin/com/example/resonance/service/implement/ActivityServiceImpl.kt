@@ -2,6 +2,8 @@ package com.example.resonance.service.implement
 
 import com.example.resonance.database.dao.ActivityDao
 import com.example.resonance.database.entity.Activity
+import com.example.resonance.errors.DoesntHaveException
+import com.example.resonance.errors.NotFountException
 import com.example.resonance.model.mapper.toDto
 import com.example.resonance.model.mapper.toEntity
 import com.example.resonance.model.mapper.update
@@ -24,7 +26,7 @@ class ActivityServiceImpl(
         activityDao.findActivitiesByCompanies(companyService.getCompany(companyId)).map { it.toDto() }
 
     override fun getActivity(id: UUID): Activity =
-        activityDao.findById(id).getOrElse { throw RuntimeException("Activity with id $id found!") }
+        activityDao.findById(id).getOrElse { throw NotFountException("Мероприятие", id) }
 
     override fun getActivityById(id: UUID): ActivityDto = getActivity(id).toDto()
 
@@ -61,7 +63,7 @@ class ActivityServiceImpl(
 
     override fun deleteActivity(id: UUID, companyId: UUID) {
         if (!getActivity(id).companies.map { it.id }.contains(companyId)) {
-            throw RuntimeException("Company with id $companyId doesn't have activity with id $id")
+            throw DoesntHaveException("Компания", "активность", companyId, id)
         }
         val activity = getActivity(id)
         val company = companyService.getCompany(companyId)

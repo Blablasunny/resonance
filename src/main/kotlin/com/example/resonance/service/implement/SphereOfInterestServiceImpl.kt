@@ -2,6 +2,8 @@ package com.example.resonance.service.implement
 
 import com.example.resonance.database.dao.SphereOfInterestDao
 import com.example.resonance.database.entity.SphereOfInterest
+import com.example.resonance.errors.DoesntHaveException
+import com.example.resonance.errors.NotFountException
 import com.example.resonance.model.mapper.toDto
 import com.example.resonance.model.mapper.toEntity
 import com.example.resonance.model.mapper.update
@@ -25,7 +27,7 @@ class SphereOfInterestServiceImpl(
         sphereOfInterestDao.findSpheresOfInterestByStudents(studentService.getStudent(studentId)).map { it.toDto() }
 
     override fun getSphereOfInterest(id: UUID): SphereOfInterest =
-        sphereOfInterestDao.findById(id).getOrElse { throw RuntimeException("Sphere of interest with id $id not found!") }
+        sphereOfInterestDao.findById(id).getOrElse { throw NotFountException("Сфера интересов", id) }
 
     override fun getSphereOfInterestById(id: UUID): SphereOfInterestDto = getSphereOfInterest(id).toDto()
 
@@ -72,7 +74,7 @@ class SphereOfInterestServiceImpl(
 
     override fun deleteSphereOfInterest(id: UUID, studentId: UUID) {
         if (!getSphereOfInterest(id).students.map { it.id }.contains(studentId)) {
-            throw RuntimeException("Student with id $studentId doesn't have sphere of interest with id $id")
+            throw DoesntHaveException("Студент", "сфера интересов", studentId, id)
         }
         val spereOfInterest = getSphereOfInterest(id)
         val student = studentService.getStudent(studentId)

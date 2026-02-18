@@ -4,11 +4,14 @@ import com.example.resonance.database.entity.EducationLevel
 import jakarta.validation.constraints.NotBlank
 
 data class UpsertEducationRq(
-    @field:NotBlank(message = "Name is required")
+    @field:NotBlank(message = "Не указано название института")
     val institutionName : String,
-    @field:NotBlank(message = "Education level is required")
+
+    @field:NotBlank(message = "Не указан уровень образования")
     val educationLevel: EducationLevel,
-    @field:NotBlank(message = "Speciality is required")
+
+    @field:NotBlank(message = "Не указана специальность")
     val speciality: String,
+
     val isFinished: Boolean = true,
 )

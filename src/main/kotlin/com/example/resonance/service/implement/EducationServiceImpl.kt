@@ -3,6 +3,8 @@ package com.example.resonance.service.implement
 import com.example.resonance.database.dao.EducationDao
 import com.example.resonance.database.dao.StudentDao
 import com.example.resonance.database.entity.Education
+import com.example.resonance.errors.DoesntHaveException
+import com.example.resonance.errors.NotFountException
 import com.example.resonance.model.mapper.toDto
 import com.example.resonance.model.mapper.toEntity
 import com.example.resonance.model.mapper.update
@@ -25,7 +27,7 @@ class EducationServiceImpl(
         educationDao.findEducationsByStudents(studentService.getStudent(studentId)).map { it.toDto() }
 
     override fun getEducation(id: UUID) =
-        educationDao.findById(id).getOrElse { throw RuntimeException("Education with id $id not found") }
+        educationDao.findById(id).getOrElse { throw NotFountException("Образование", id) }
 
     override fun getEducations(): List<EducationDto> = educationDao.findAll().map { it.toDto() }
 
@@ -60,7 +62,7 @@ class EducationServiceImpl(
 
     override fun deleteEducation(id: UUID, studentId: UUID) {
         if (!getEducation(id).students.map { it.id }.contains(studentId)) {
-            throw RuntimeException("Student with id $studentId doesn't have education with id $id")
+            throw DoesntHaveException("Студент", "образование", studentId, id)
         }
         val education = getEducation(id)
         val student = studentService.getStudent(studentId)

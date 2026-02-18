@@ -19,8 +19,8 @@ data class Company (
     var industry: String,
     @Column(name = "website_link", nullable = false)
     var websiteLink : String,
-    @Column(name = "career_page_link", nullable = false)
-    var careerPageLink : String,
+    @Column(name = "career_page_link")
+    var careerPageLink : String?,
 ) : AbstractEntity() {
     @ManyToMany(mappedBy = "companies")
     var activities: MutableSet<Activity> = mutableSetOf()

@@ -2,6 +2,8 @@ package com.example.resonance.service.implement
 
 import com.example.resonance.database.dao.ResponsibilityDao
 import com.example.resonance.database.entity.Responsibility
+import com.example.resonance.errors.DoesntHaveException
+import com.example.resonance.errors.NotFountException
 import com.example.resonance.model.mapper.toDto
 import com.example.resonance.model.mapper.toEntity
 import com.example.resonance.model.mapper.update
@@ -24,7 +26,7 @@ class ResponsibilityServiceImpl(
         responsibilityDao.findResponsibilitiesByVacancies(vacancyService.getVacancy(vacancyId)).map { it.toDto() }
 
     override fun getResponsibility(id: UUID): Responsibility =
-        responsibilityDao.findById(id).getOrElse { throw RuntimeException("Responsibility with id $id not found") }
+        responsibilityDao.findById(id).getOrElse { throw NotFountException("Обязанность", id) }
 
     override fun getResponsibilities(): List<ResponsibilityDto> = responsibilityDao.findAll().map { it.toDto() }
 
@@ -59,7 +61,7 @@ class ResponsibilityServiceImpl(
 
     override fun deleteResponsibility(id: UUID, vacancyId: UUID) {
         if (!getResponsibility(id).vacancies.map { it.id }.contains(vacancyId)) {
-            throw RuntimeException("Vacancy with id $vacancyId doesn't have responsibility with id $id")
+            throw DoesntHaveException("Вакансия", "обязанность", vacancyId, id)
         }
         val responsibility = getResponsibility(id)
         val vacancy = vacancyService.getVacancy(vacancyId)

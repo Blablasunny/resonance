@@ -4,6 +4,8 @@ import com.example.resonance.database.dao.ResponsibilityDao
 import com.example.resonance.database.dao.SkillDao
 import com.example.resonance.database.dao.VacancyDao
 import com.example.resonance.database.entity.Vacancy
+import com.example.resonance.errors.DoesntHaveException
+import com.example.resonance.errors.NotFountException
 import com.example.resonance.model.mapper.toDto
 import com.example.resonance.model.mapper.toEntity
 import com.example.resonance.model.mapper.update
@@ -31,7 +33,7 @@ class VacancyServiceImpl(
         vacancyDao.findVacanciesByCompanies(companyService.getCompany(companyId)).filter { it.isOpen }.map { it.toDto() }
 
     override fun getVacancy(id: UUID): Vacancy =
-        vacancyDao.findById(id).getOrElse { throw RuntimeException("Vacancy with id $id not found!") }
+        vacancyDao.findById(id).getOrElse { throw NotFountException("Вакансия", id) }
 
     override fun getVacancyById(id: UUID): VacancyDto = getVacancy(id).toDto()
 
@@ -71,7 +73,7 @@ class VacancyServiceImpl(
 
     override fun deleteVacancy(id: UUID, companyId: UUID) {
         if (!getVacancy(id).companies.map { it.id }.contains(companyId)) {
-            throw RuntimeException("Company with id $companyId doesn't have vacancy with id $id")
+            throw DoesntHaveException("Компания", "вакансия", companyId, id)
         }
         val vacancy = getVacancy(id)
         val company = companyService.getCompany(companyId)

@@ -2,6 +2,8 @@ package com.example.resonance.service.implement
 
 import com.example.resonance.database.dao.SubjectDao
 import com.example.resonance.database.entity.Subject
+import com.example.resonance.errors.DoesntHaveException
+import com.example.resonance.errors.NotFountException
 import com.example.resonance.model.mapper.toDto
 import com.example.resonance.model.mapper.toEntity
 import com.example.resonance.model.mapper.update
@@ -26,7 +28,7 @@ class SubjectServiceImpl(
         subjectDao.findSubjectsByStudents(studentService.getStudent(studentId)).map { it.toDto() }
 
     override fun getSubject(id: UUID): Subject =
-        subjectDao.findById(id).getOrElse { throw RuntimeException("Subject with id $id not found!") }
+        subjectDao.findById(id).getOrElse { throw NotFountException("Учебный предмет", id) }
 
     override fun getSubjectById(id: UUID): SubjectDto = getSubject(id).toDto()
 
@@ -73,7 +75,7 @@ class SubjectServiceImpl(
 
     override fun deleteSubject(id: UUID, studentId: UUID) {
         if (!getSubject(id).students.map { it.id }.contains(studentId)) {
-            throw RuntimeException("Student with id $studentId doesn't have subject with id $id")
+            throw DoesntHaveException("Студент", "учебный предмет", studentId, id)
         }
         val subject = getSubject(id)
         val student = studentService.getStudent(studentId)

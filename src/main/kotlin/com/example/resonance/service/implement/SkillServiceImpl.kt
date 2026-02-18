@@ -2,6 +2,8 @@ package com.example.resonance.service.implement
 
 import com.example.resonance.database.dao.SkillDao
 import com.example.resonance.database.entity.Skill
+import com.example.resonance.errors.DoesntHaveException
+import com.example.resonance.errors.NotFountException
 import com.example.resonance.model.mapper.toDto
 import com.example.resonance.model.mapper.toEntity
 import com.example.resonance.model.mapper.update
@@ -32,7 +34,7 @@ class SkillServiceImpl(
         skillDao.findSkillsByVacancies(vacancyService.getVacancy(vacancyId)).map { it.toDto() }
 
     override fun getSkill(id: UUID): Skill =
-        skillDao.findById(id).getOrElse { throw RuntimeException("Skill with id $id not found!") }
+        skillDao.findById(id).getOrElse { throw NotFountException("Навык", id) }
 
     override fun getSkillById(id: UUID): SkillDto = getSkill(id).toDto()
 
@@ -84,7 +86,7 @@ class SkillServiceImpl(
         when(skillOwner) {
             SkillOwner.STUDENT -> {
                 if (!getSkill(id).students.map { it.id }.contains(ownerId)) {
-                    throw RuntimeException("Student with id $ownerId doesn't have skill with id $id")
+                    throw DoesntHaveException("ВакансияСтудент", "навык", ownerId, id)
                 }
                 val student = studentService.getStudent(ownerId)
                 student.skills.remove(skill)
@@ -93,7 +95,7 @@ class SkillServiceImpl(
 
             SkillOwner.VACANCY -> {
                 if (!getSkill(id).vacancies.map { it.id }.contains(ownerId)) {
-                    throw RuntimeException("Vacancy with id $ownerId doesn't have skill with id $id")
+                    throw DoesntHaveException("Вакансия", "навык", ownerId, id)
                 }
                 val vacancy = vacancyService.getVacancy(ownerId)
                 vacancy.skills.remove(skill)

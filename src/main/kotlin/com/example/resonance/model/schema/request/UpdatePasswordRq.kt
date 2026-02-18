@@ -4,13 +4,13 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 
 data class UpdatePasswordRq(
-    @field:NotBlank(message = "Old password is required")
+    @field:NotBlank(message = "Не указан старый пароль")
     val oldPassword: String,
 
-    @field:NotBlank(message = "Password is required")
-    @field:Size(min = 8, message = "Password must be at least 8 characters")
+    @field:NotBlank(message = "Не указан пароль")
+    @field:Size(min = 8, message = "Пароль должен содержать не менее 8 символов")
     val password: String,
 
-    @field:NotBlank(message = "Confirm password is required")
+    @field:NotBlank(message = "Не указан подтверждение пароля")
     val confirmPassword: String,
 )

@@ -3,6 +3,8 @@ package com.example.resonance.service.implement
 import com.example.resonance.database.dao.ExperienceDao
 import com.example.resonance.database.dao.StudentDao
 import com.example.resonance.database.entity.Experience
+import com.example.resonance.errors.DoesntHaveException
+import com.example.resonance.errors.NotFountException
 import com.example.resonance.model.mapper.toDto
 import com.example.resonance.model.mapper.toEntity
 import com.example.resonance.model.mapper.update
@@ -25,7 +27,7 @@ class ExperienceServiceImpl(
         experienceDao.findExperiencesByStudents(studentService.getStudent(studentId)).map { it.toDto() }
 
     override fun getExperience(id: UUID): Experience =
-        experienceDao.findById(id).getOrElse { throw RuntimeException("Experience with id $id not found") }
+        experienceDao.findById(id).getOrElse { throw NotFountException("Опыт работы", id) }
 
     override fun getExperiences(): List<ExperienceDto> = experienceDao.findAll().map { it.toDto() }
 
@@ -60,7 +62,7 @@ class ExperienceServiceImpl(
 
     override fun deleteExperience(id: UUID, studentId: UUID) {
         if (!getExperience(id).students.map { it.id }.contains(studentId)) {
-            throw RuntimeException("Student with id $studentId doesn't have experience with id $id")
+            throw DoesntHaveException("Студент", "опыт работы", studentId, id)
         }
         val experience = getExperience(id)
         val student = studentService.getStudent(studentId)

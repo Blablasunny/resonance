@@ -8,16 +8,16 @@ import java.util.UUID
 
 data class UpsertUserRq(
     val userId: UUID,
+
     val userType: UserType,
+
     val isActive: Boolean = true,
-    @field:NotBlank(message = "Email is required")
-    @field:Email(message = "Invalid email format")
+
+    @field:NotBlank(message = "Не указан email")
+    @field:Email(message = "Неверный формат email")
     val email: String,
-    @field:NotBlank(message = "Password is required")
-    @field:Size(min = 8, message = "Password must be at least 8 characters")
-    val password: String? = null
-) {
-    fun getPasswordOrThrow(): String {
-        return password ?: throw IllegalArgumentException("Password is required")
-    }
-}
+
+    @field:NotBlank(message = "Не указан пароль")
+    @field:Size(min = 8, message = "Пароль должен содержать не менее 8 символов")
+    val password: String
+)

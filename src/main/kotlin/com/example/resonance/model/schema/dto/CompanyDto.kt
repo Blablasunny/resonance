@@ -9,7 +9,7 @@ data class CompanyDto (
     val companyDescription : String,
     val industry : String,
     val websiteLink : String,
-    val careerPageLink : String,
+    val careerPageLink : String?,
     val createdAt : LocalDateTime,
     val updatedAt : LocalDateTime,
 )

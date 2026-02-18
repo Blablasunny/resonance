@@ -3,6 +3,8 @@ package com.example.resonance.service.implement
 import com.example.resonance.database.dao.CompanyDao
 import com.example.resonance.database.dao.UserDao
 import com.example.resonance.database.entity.Company
+import com.example.resonance.errors.AlreadyExistsException
+import com.example.resonance.errors.NotFountException
 import com.example.resonance.model.schema.request.UpsertCompanyRq
 import com.example.resonance.model.schema.dto.CompanyDto
 import com.example.resonance.model.mapper.toDto
@@ -24,7 +26,7 @@ class CompanyServiceImpl(
         companyDao.findAll().map { it.toDto() }
 
     override fun getCompany(id: UUID): Company =
-        companyDao.findById(id).getOrElse { throw RuntimeException("company not found") }
+        companyDao.findById(id).getOrElse { throw NotFountException("Компания", id) }
 
     override fun getCompanyById(id: UUID): CompanyDto = getCompany(id).toDto()
 
@@ -41,13 +43,13 @@ class CompanyServiceImpl(
             return oldCompany.toDto()
         }
         if (company in companyDao.findAll()) {
-            throw RuntimeException("this company already exists")
+            throw AlreadyExistsException(rq)
         }
         return companyDao.save(getCompany(id).update(rq)).toDto()
     }
 
     override fun deleteCompany(id: UUID) {
-        val userId = userDao.findByUserId(id)!!.id
+        val userId = userDao.findById(id).getOrElse { throw NotFountException("Пользователь", id) }.id
         companyDao.deleteById(id)
         userDao.deleteById(userId!!)
     }

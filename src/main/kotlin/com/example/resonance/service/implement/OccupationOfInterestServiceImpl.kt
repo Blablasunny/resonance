@@ -2,6 +2,8 @@ package com.example.resonance.service.implement
 
 import com.example.resonance.database.dao.OccupationOfInterestDao
 import com.example.resonance.database.entity.OccupationOfInterest
+import com.example.resonance.errors.DoesntHaveException
+import com.example.resonance.errors.NotFountException
 import com.example.resonance.model.mapper.toDto
 import com.example.resonance.model.mapper.toEntity
 import com.example.resonance.model.mapper.update
@@ -26,7 +28,7 @@ class OccupationOfInterestServiceImpl(
         occupationOfInterestDao.findOccupationsOfInterestByStudents(studentService.getStudent(studentId)).map { it.toDto() }
 
     override fun getOccupationOfInterest(id: UUID): OccupationOfInterest =
-        occupationOfInterestDao.findById(id).getOrElse { throw RuntimeException("Occupation of interest  with id $id not found!") }
+        occupationOfInterestDao.findById(id).getOrElse { throw NotFountException("Профессиональный интерес", id) }
 
     override fun getOccupationOfInterestById(id: UUID): OccupationOfInterestDto = getOccupationOfInterest(id).toDto()
 
@@ -73,7 +75,7 @@ class OccupationOfInterestServiceImpl(
 
     override fun deleteOccupationOfInterest(id: UUID, studentId: UUID) {
         if (!getOccupationOfInterest(id).students.map { it.id }.contains(studentId)) {
-            throw RuntimeException("Student with id $studentId doesn't have occupation of interest with id $id")
+            throw DoesntHaveException("Студент", "профессиональный интерес", studentId, id)
         }
         val occupationOfInterest = getOccupationOfInterest(id)
         val student = studentService.getStudent(studentId)

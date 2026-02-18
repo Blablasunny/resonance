@@ -6,14 +6,20 @@ import jakarta.validation.constraints.NotBlank
 import java.time.LocalDate
 
 data class UpsertStudentRq(
-    @field:NotBlank(message = "First name is required")
+    @field:NotBlank(message = "Не указано имя")
     val firstName: String,
-    @field:NotBlank(message = "Last name is required")
+
+    @field:NotBlank(message = "Не указана фамилия")
     val lastName: String,
+
     val middleName: String?,
+
     val gender: Gender,
+
     val birthDate: LocalDate,
-    @field:NotBlank(message = "Citizenship is required")
+
+    @field:NotBlank(message = "Не указано гражданство")
     val citizenship: String,
+
     val professionGrade: ProfessionGrade,
 )

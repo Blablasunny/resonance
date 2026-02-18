@@ -22,7 +22,7 @@ fun UpsertUserRq.toEntity() = UserEntity(
     userType = userType,
     isActive = isActive,
     email = email,
-    password = getPasswordOrThrow(),
+    password = password,
 )
 
 fun UserEntity.updateEmail(newEmail: String): UserEntity =

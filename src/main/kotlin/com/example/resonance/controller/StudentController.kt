@@ -1,13 +1,12 @@
 package com.example.resonance.controller
 
 import com.example.resonance.database.entity.UserType
-import com.example.resonance.model.mapper.toDto
 import com.example.resonance.model.schema.dto.OccupationOfInterestDto
 import com.example.resonance.model.schema.dto.SkillDto
 import com.example.resonance.model.schema.dto.SphereOfInterestDto
 import com.example.resonance.model.schema.dto.StudentDto
 import com.example.resonance.model.schema.dto.SubjectDto
-import com.example.resonance.model.schema.request.GradeRq
+import com.example.resonance.model.schema.request.GradesRq
 import com.example.resonance.model.schema.request.IdsRq
 import com.example.resonance.model.schema.request.UpsertAchievementRq
 import com.example.resonance.model.schema.request.UpsertEducationRq
@@ -72,7 +71,7 @@ class StudentController(
     fun getGrades() = studentService.getGrades()
 
     @GetMapping("/grades/ids")
-    fun getGrades(@RequestBody rq: GradeRq) = studentService.getStudentsByGrades(rq)
+    fun getGrades(@RequestBody rq: GradesRq) = studentService.getStudentsByGrades(rq)
 
 
     @GetMapping("/educations/{studentId}")

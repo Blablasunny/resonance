@@ -2,6 +2,8 @@ package com.example.resonance.service.implement
 
 import com.example.resonance.database.dao.AchievementDao
 import com.example.resonance.database.entity.Achievement
+import com.example.resonance.errors.DoesntHaveException
+import com.example.resonance.errors.NotFountException
 import com.example.resonance.model.mapper.toDto
 import com.example.resonance.model.mapper.toEntity
 import com.example.resonance.model.mapper.update
@@ -24,7 +26,7 @@ class AchievementServiceImpl(
         achievementDao.findAchievementsByStudents(studentService.getStudent(studentId)).map { it.toDto() }
 
     override fun getAchievement(id: UUID): Achievement =
-        achievementDao.findById(id).getOrElse { throw RuntimeException("Achievement with id $id not found") }
+        achievementDao.findById(id).getOrElse { throw NotFountException("Достижение", id) }
 
     override fun getAchievements(): List<AchievementDto> = achievementDao.findAll().map { it.toDto() }
 
@@ -59,7 +61,7 @@ class AchievementServiceImpl(
 
     override fun deleteAchievement(id: UUID, studentId: UUID) {
         if (!getAchievement(id).students.map { it.id }.contains(studentId)) {
-            throw RuntimeException("Student with id $studentId doesn't have achievement with id $id")
+            throw DoesntHaveException("Студент", "достижение", studentId, id)
         }
         val achievement = getAchievement(id)
         val student = studentService.getStudent(studentId)

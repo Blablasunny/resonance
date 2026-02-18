@@ -2,6 +2,7 @@ package com.example.resonance.service.implement
 
 import com.example.resonance.database.entity.UserEntity
 import com.example.resonance.database.entity.UserType
+import com.example.resonance.errors.NotFountException
 import com.example.resonance.service.CompanyService
 import com.example.resonance.service.SecurityService
 import com.example.resonance.service.StudentService
@@ -77,7 +78,7 @@ class SecurityServiceImpl(
         return when (currentUser.userType) {
             UserType.COMPANY -> {
                 val companyProfileId =
-                    getCompanyProfileId(currentUser.userId) ?: throw RuntimeException("Company not found")
+                    getCompanyProfileId(currentUser.userId) ?: throw NotFountException("Компания", currentUser.userId)
                 vacancyId in vacancyService.getVacancyByCompanyId(companyProfileId).map { it.id }
             }
             UserType.STUDENT -> {

@@ -6,11 +6,16 @@ import java.time.LocalDate
 
 data class UpsertAchievementRq(
     val achievementType: AchievementType,
-    @field:NotBlank(message = "Title is required")
+
+    @field:NotBlank(message = "Не указано название достижения")
     val title: String,
+
     val description: String?,
-    @field:NotBlank(message = "Results are required")
+
+    @field:NotBlank(message = "Не указаны результаты")
     val results: String,
+
     val confirmation: Boolean = false,
+
     val date: LocalDate,
 )

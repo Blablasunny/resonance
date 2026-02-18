@@ -3,6 +3,8 @@ package com.example.resonance.service.implement
 import com.example.resonance.database.dao.SocialProfileDao
 import com.example.resonance.database.entity.SocialProfile
 import com.example.resonance.database.entity.UserType
+import com.example.resonance.errors.DoesntHaveException
+import com.example.resonance.errors.NotFountException
 import com.example.resonance.model.mapper.toDto
 import com.example.resonance.model.mapper.toEntity
 import com.example.resonance.model.mapper.update
@@ -30,7 +32,7 @@ class SocialProfileServiceImpl(
         socialProfileDao.findSocialProfilesByCompanies(companyService.getCompany(companyId)).map { it.toDto() }
 
     override fun getSocialProfile(id: UUID): SocialProfile =
-        socialProfileDao.findById(id).getOrElse { throw RuntimeException("Social profile with id $id not found!") }
+        socialProfileDao.findById(id).getOrElse { throw NotFountException("Профиль", id) }
 
     override fun getSocialProfiles(): List<SocialProfileDto> = socialProfileDao.findAll().map { it.toDto() }
 
@@ -70,7 +72,7 @@ class SocialProfileServiceImpl(
         when(userType) {
             UserType.STUDENT -> {
                 if (!getSocialProfile(id).students.map { it.id }.contains(userId)) {
-                    throw RuntimeException("Student with id $userId doesn't have social profile with id $id")
+                    throw DoesntHaveException("Студент", "профиль", userId, id)
                 }
                 val student = studentService.getStudent(userId)
                 student.socialProfiles.remove(socialProfile)
@@ -79,7 +81,7 @@ class SocialProfileServiceImpl(
 
             UserType.COMPANY -> {
                 if (!getSocialProfile(id).companies.map { it.id }.contains(userId)) {
-                    throw RuntimeException("Company with id $userId doesn't have social profile with id $id")
+                    throw DoesntHaveException("Компания", "профиль", userId, id)
                 }
                 val company = companyService.getCompany(userId)
                 company.socialProfiles.remove(socialProfile)

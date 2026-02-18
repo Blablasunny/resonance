@@ -5,6 +5,10 @@ import com.example.resonance.database.dao.StudentDao
 import com.example.resonance.database.dao.UserDao
 import com.example.resonance.database.entity.UserEntity
 import com.example.resonance.database.entity.UserType
+import com.example.resonance.errors.AlreadyExistsException
+import com.example.resonance.errors.ApiError
+import com.example.resonance.errors.DataRequiredException
+import com.example.resonance.errors.PasswordsDontMatchesException
 import com.example.resonance.model.mapper.toEntity
 import com.example.resonance.model.schema.dto.AuthDto
 import com.example.resonance.model.schema.dto.RegisterDto
@@ -14,6 +18,7 @@ import com.example.resonance.security.JwtUtil
 import com.example.resonance.service.AuthService
 import com.example.resonance.service.CompanyService
 import com.example.resonance.service.StudentService
+import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -32,10 +37,10 @@ class AuthServiceImpl(
 
     override fun authenticate(rq: AuthRq): AuthDto {
         val user = userDao.findByEmail(rq.email)
-            ?: throw BadCredentialsException("Invalid credentials")
+            ?: throw ApiError(HttpStatus.UNAUTHORIZED, "Неверный email")
 
         if (!passwordEncoder.matches(rq.password, user.password)) {
-            throw BadCredentialsException("Invalid credentials")
+            throw ApiError(HttpStatus.UNAUTHORIZED, "Неверный пароль")
         }
 
         val token = jwtUtil.generateToken(user)
@@ -55,9 +60,7 @@ class AuthServiceImpl(
     override fun register(rq: RegisterRq): RegisterDto {
         validateRegistrationRequest(rq)
 
-        if (userDao.existsByEmail(rq.email)) {
-            throw IllegalArgumentException("User with email ${rq.email} already exists")
-        }
+        if (userDao.existsByEmail(rq.email)) throw AlreadyExistsException(rq.email)
 
         val (profileId, profileDto) = createProfileWithExistingDto(rq)
 
@@ -78,24 +81,14 @@ class AuthServiceImpl(
     }
 
     private fun validateRegistrationRequest(rq: RegisterRq) {
-        if (rq.password != rq.confirmPassword) {
-            throw IllegalArgumentException("Passwords do not match")
-        }
-
-        if (rq.password.length < 8) {
-            throw IllegalArgumentException("Password must be at least 8 characters")
-        }
+        if (rq.password != rq.confirmPassword) throw PasswordsDontMatchesException()
 
         when (rq.userType) {
             UserType.STUDENT -> {
-                if (rq.studentData == null) {
-                    throw IllegalArgumentException("Student data is required for STUDENT type")
-                }
+                if (rq.studentData == null) throw DataRequiredException(UserType.STUDENT)
             }
             UserType.COMPANY -> {
-                if (rq.companyData == null) {
-                    throw IllegalArgumentException("Company data is required for COMPANY type")
-                }
+                if (rq.companyData == null) throw DataRequiredException(UserType.COMPANY)
             }
         }
     }
@@ -104,17 +97,13 @@ class AuthServiceImpl(
         return when (rq.userType) {
             UserType.STUDENT -> {
                 val studentRq = rq.studentData!!
-                if (studentRq.toEntity() in studentDao.findAll()) {
-                    throw IllegalArgumentException("This student data is already registered")
-                }
+                if (studentRq.toEntity() in studentDao.findAll()) throw AlreadyExistsException(studentRq.toEntity())
                 val student = studentService.createStudent(studentRq)
                 Pair(student.id!!, student)
             }
             UserType.COMPANY -> {
                 val companyRq = rq.companyData!!
-                if (companyRq.toEntity() in companyDao.findAll()) {
-                    throw IllegalArgumentException("This company data is already registered")
-                }
+                if (companyRq.toEntity() in companyDao.findAll()) throw AlreadyExistsException(companyRq.toEntity())
                 val company = companyService.createCompany(companyRq)
                 Pair(company.id!!, company)
             }
