@@ -39,15 +39,6 @@ class JwtUtil {
         return extractClaim(token, Claims::getSubject)
     }
 
-//    fun extractUserId(token: String): UUID {
-//        val userId = extractClaim(token) { it["userId"] as String }
-//        return UUID.fromString(userId)
-//    }
-//
-//    fun extractUserType(token: String): UserType {
-//        val userType = extractClaim(token) { it["userType"] as String }
-//        return UserType.valueOf(userType)
-//    }
 
     fun <T> extractClaim(token: String, claimsResolver: (Claims) -> T): T {
         val claims = extractAllClaims(token)
