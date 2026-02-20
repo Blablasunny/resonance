@@ -13,11 +13,6 @@ open class ApiError(
 ) : Exception() {
     var status: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR
 
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss[.SSS]")
-    val timestamp: LocalDateTime = LocalDateTime.now()
-
     private val logger = ResonanceLogger(this::class.java)
 
     constructor(
