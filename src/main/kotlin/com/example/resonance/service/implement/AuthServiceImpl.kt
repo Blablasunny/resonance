@@ -10,18 +10,23 @@ import com.example.resonance.errors.ApiError
 import com.example.resonance.errors.DataRequiredException
 import com.example.resonance.errors.PasswordsDontMatchesException
 import com.example.resonance.model.mapper.toEntity
-import com.example.resonance.model.schema.dto.AuthDto
+import com.example.resonance.model.schema.dto.AuthResponseDto
+import com.example.resonance.model.schema.dto.RefreshTokenResponseDto
 import com.example.resonance.model.schema.dto.RegisterDto
 import com.example.resonance.model.schema.request.RegisterRq
 import com.example.resonance.model.schema.request.AuthRq
+import com.example.resonance.model.schema.request.RefreshTokenRq
 import com.example.resonance.security.JwtUtil
 import com.example.resonance.service.AuthService
 import com.example.resonance.service.CompanyService
 import com.example.resonance.service.StudentService
+import com.example.resonance.service.TokenService
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
-import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 import java.util.UUID
 
 @Service
@@ -31,11 +36,13 @@ class AuthServiceImpl(
     private val companyService: CompanyService,
     private val passwordEncoder: PasswordEncoder,
     private val jwtUtil: JwtUtil,
+    private val tokenService: TokenService,
     private val studentDao: StudentDao,
     private val companyDao: CompanyDao
 ): AuthService {
 
-    override fun authenticate(rq: AuthRq): AuthDto {
+    @Transactional
+    override fun authenticate(rq: AuthRq, request: HttpServletRequest): AuthResponseDto {
         val user = userDao.findByEmail(rq.email)
             ?: throw ApiError(HttpStatus.UNAUTHORIZED, "Неверный email")
 
@@ -43,21 +50,27 @@ class AuthServiceImpl(
             throw ApiError(HttpStatus.UNAUTHORIZED, "Неверный пароль")
         }
 
-        val token = jwtUtil.generateToken(user)
+        if (!user.isActive) {
+            throw ApiError(HttpStatus.FORBIDDEN, "Аккаунт деактивирован")
+        }
 
-        return AuthDto(
-            token = token,
-            userId = user.userId,
-            userType = user.userType,
-            email = user.email
-        )
+        return generateTokenPair(user, request)
     }
 
     override fun validateToken(token: String): Boolean {
-        return jwtUtil.validateToken(token)
+        if (!jwtUtil.validateAccessToken(token)) {
+            return false
+        }
+
+        if (tokenService.isTokenBlacklisted(token)) {
+            return false
+        }
+
+        return true
     }
 
-    override fun register(rq: RegisterRq): RegisterDto {
+    @Transactional
+    override fun register(rq: RegisterRq, request: HttpServletRequest): RegisterDto {
         validateRegistrationRequest(rq)
 
         if (userDao.existsByEmail(rq.email)) throw AlreadyExistsException(rq.email)
@@ -67,16 +80,87 @@ class AuthServiceImpl(
         val user = createUserEntity(rq, profileId)
         val savedUser = userDao.save(user)
 
-        val token = jwtUtil.generateToken(savedUser)
+        val tokens = generateTokenPair(savedUser, request)
 
         return RegisterDto(
             id = savedUser.id!!,
             email = savedUser.email,
             userType = savedUser.userType,
-            token = token,
+            token = tokens.accessToken,
             message = "${rq.userType} registered successfully",
             profileId = profileId,
             profileData = profileDto
+        )
+    }
+
+    @Transactional
+    override fun refreshToken(rq: RefreshTokenRq, request: HttpServletRequest): RefreshTokenResponseDto {
+
+        val refreshToken = rq.refreshToken
+
+        val validToken = tokenService.validateRefreshToken(refreshToken)
+            ?: throw ApiError(HttpStatus.UNAUTHORIZED, "Invalid or expired refresh token")
+
+        val userId = validToken.userId
+        val user = userDao.findByUserId(userId)
+            ?: throw ApiError(HttpStatus.NOT_FOUND, "User not found")
+
+        if (!user.isActive) {
+            throw ApiError(HttpStatus.FORBIDDEN, "Account is deactivated")
+        }
+
+        tokenService.revokeRefreshToken(refreshToken)
+
+        val newTokens = generateTokenPair(user, request)
+
+        return RefreshTokenResponseDto(
+            accessToken = newTokens.accessToken,
+            refreshToken = newTokens.refreshToken,
+            tokenType = "Bearer",
+            expiresIn = jwtUtil.getAccessTokenExpirationMillis()
+        )
+    }
+
+    @Transactional
+    override fun logout(token: String, refreshToken: String?) {
+        val userId = jwtUtil.extractUserId(token)
+            ?: throw ApiError(HttpStatus.BAD_REQUEST, "Invalid token")
+
+        tokenService.blacklistToken(token, userId, "USER_LOGOUT")
+
+        refreshToken?.let {
+            tokenService.revokeRefreshToken(it)
+        }
+    }
+
+    @Transactional
+    override fun logoutAll(userId: UUID) {
+        tokenService.revokeAllUserRefreshTokens(userId)
+    }
+
+    private fun generateTokenPair(user: UserEntity, request: HttpServletRequest): AuthResponseDto {
+        val accessToken = jwtUtil.generateAccessToken(user)
+        val refreshToken = jwtUtil.generateRefreshToken(user)
+
+        val expiresAt = LocalDateTime.now()
+            .plusSeconds(jwtUtil.getRefreshTokenExpirationMillis() / 1000)
+
+        tokenService.saveRefreshToken(
+            token = refreshToken,
+            userId = user.userId,
+            expiresAt = expiresAt,
+            ipAddress = tokenService.extractIpAddress(request),
+            userAgent = tokenService.extractUserAgent(request)
+        )
+
+        return AuthResponseDto(
+            accessToken = accessToken,
+            refreshToken = refreshToken,
+            tokenType = "Bearer",
+            expiresIn = jwtUtil.getAccessTokenExpirationMillis(),
+            userId = user.userId,
+            userType = user.userType,
+            email = user.email
         )
     }
 

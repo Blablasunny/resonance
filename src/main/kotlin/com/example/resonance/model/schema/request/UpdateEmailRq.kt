@@ -7,4 +7,7 @@ data class UpdateEmailRq(
     @field:NotBlank(message = "Не указан email")
     @field:Email(message = "Неверный формат email")
     val email: String,
+
+    @field:NotBlank(message = "Не указан пароль")
+    val password: String
 )

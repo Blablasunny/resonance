@@ -50,7 +50,7 @@ class ExperienceServiceImpl(
         studentId: UUID
     ): ExperienceDto {
         val experience = rq.toEntity()
-        if (experience == getExperience(studentId)) return getExperience(id).toDto()
+        if (experience == getExperience(id)) return getExperience(id).toDto()
         deleteExperience(id, studentId)
         for (exp in experienceDao.findAll()) {
             if (experience == exp) {

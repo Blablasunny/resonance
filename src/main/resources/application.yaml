@@ -1,11 +1,11 @@
 spring:
   application:
-    name: resonance
+    name: ${APP_NAME:resonance}
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/resonance
-    username: res
-    password: pass
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/resonance}
+    username: ${DB_USERNAME:res}
+    password: ${DB_PASSWORD:CHANGE_ME}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -13,10 +13,34 @@ spring:
       ddl-auto: update
     show-sql: true
     open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  web:
+    error:
+      include-stacktrace: always
+      include-message: always
+      include-binding-errors: always
 
 server:
-  port: 8088
+  port: ${SERVER_PORT:8088}
+
+logging:
+  level:
+    com.example.resonance: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.springframework.boot.autoconfigure: ERROR
 
 jwt:
-  secret: "atLeast32CharactersLongSecretKeyForJWT123!"
-  expiration: 86400000
+  secret: ${JWT_SECRET:CHANGE_THIS_TO_YOUR_SECRET_KEY_AT_LEAST_64_CHARACTERS_LONG_FOR_HS512}
+  refresh-secret: ${JWT_REFRESH_SECRET:CHANGE_THIS_TO_YOUR_REFRESH_SECRET_KEY_AT_LEAST_64_CHARS}
+
+  expiration: ${JWT_EXPIRATION:900000}
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800000}
+
+  issuer: ${JWT_ISSUER:resonance-api}
+  audience: ${JWT_AUDIENCE:resonance-client}

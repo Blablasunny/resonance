@@ -62,8 +62,8 @@ class StudentServiceImpl(
     }
 
     override fun deleteStudent(id: UUID) {
-        val userId = userDao.findById(id).getOrElse { throw NotFountException("Пользователь", id) }.id
+        val user = userDao.findByUserId(id) ?: throw NotFountException("Пользователь", id)
         studentDao.deleteById(id)
-        userDao.deleteById(userId!!)
+        userDao.deleteById(user.id!!)
     }
 }

@@ -38,3 +38,18 @@ out/
 
 ### Kotlin ###
 .kotlin
+
+### Environment Variables ###
+.env
+.env.*.local
+*.env
+
+### Security ###
+application-local.yaml
+application-local.yml
+application-secret.yaml
+application-secret.yml
+
+### Logs ###
+logs/
+*.log

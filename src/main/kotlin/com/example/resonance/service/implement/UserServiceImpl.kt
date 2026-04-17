@@ -4,6 +4,7 @@ import com.example.resonance.database.dao.UserDao
 import com.example.resonance.database.entity.UserEntity
 import com.example.resonance.database.entity.UserType
 import com.example.resonance.errors.AlreadyExistsException
+import com.example.resonance.errors.ApiError
 import com.example.resonance.errors.NotFountException
 import com.example.resonance.errors.PasswordsDontMatchesException
 import com.example.resonance.model.schema.request.UpsertUserRq
@@ -21,11 +22,14 @@ import com.example.resonance.model.schema.request.UpdatePasswordRq
 import com.example.resonance.security.JwtUtil
 import com.example.resonance.service.CompanyService
 import com.example.resonance.service.StudentService
+import com.example.resonance.service.TokenService
 import com.example.resonance.service.UserService
+import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 import java.util.UUID
 import kotlin.jvm.optionals.getOrElse
 
@@ -35,6 +39,7 @@ class UserServiceImpl(
     private val userDao: UserDao,
     private val passwordEncoder: PasswordEncoder,
     private val jwtUtil: JwtUtil,
+    private val tokenService: TokenService,
 ): UserService {
     override fun getUsers(): List<EmailDto> =
         userDao.findAll().map { it.toEmailDto() }
@@ -51,16 +56,36 @@ class UserServiceImpl(
         else throw NotFountException("Пользователь", id)
     }
 
+    @Transactional
     override fun updateEmail(id: UUID, rq: UpdateEmailRq): UpdateEmailDto {
         if (userDao.findByEmail(rq.email) != null) {
             throw AlreadyExistsException(rq.email)
         }
-        var user = getUser(id)
-        user = userDao.save(user.updateEmail(rq.email))
-        val token = jwtUtil.generateToken(user)
+
+        val user = getUser(id)
+        if (!passwordEncoder.matches(rq.password, user.password)) {
+            throw ApiError(HttpStatus.UNAUTHORIZED, "Неверный пароль")
+        }
+
+        val updatedUser = userDao.save(user.updateEmail(rq.email))
+
+        tokenService.revokeAllUserRefreshTokens(updatedUser.userId)
+
+        val accessToken = jwtUtil.generateAccessToken(updatedUser)
+        val refreshToken = jwtUtil.generateRefreshToken(updatedUser)
+
+        val expiresAt = LocalDateTime.now()
+            .plusSeconds(jwtUtil.getRefreshTokenExpirationMillis() / 1000)
+        tokenService.saveRefreshToken(
+            token = refreshToken,
+            userId = updatedUser.userId,
+            expiresAt = expiresAt
+        )
+
         return UpdateEmailDto(
-            message = "Email updated successfully",
-            newToken = token,
+            message = "Email updated successfully. Please login on all devices with new credentials.",
+            accessToken = accessToken,
+            refreshToken = refreshToken,
             newEmail = rq.email
         )
     }
