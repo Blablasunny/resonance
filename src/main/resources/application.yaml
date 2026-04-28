@@ -24,7 +24,7 @@ spring:
       include-binding-errors: always
 
 server:
-  port: ${SERVER_PORT:8088}
+  port: ${APP_PORT:8088}
 
 logging:
   level:

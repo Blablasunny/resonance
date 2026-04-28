@@ -26,6 +26,14 @@ class JwtAuthenticationFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
+        val path = request.requestURI
+        if (path.startsWith("/actuator/health") ||
+            path.startsWith("/actuator/info") ||
+            path.startsWith("/auth/")) {
+            filterChain.doFilter(request, response)
+            return
+        }
+
         val authHeader = request.getHeader("Authorization")
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {

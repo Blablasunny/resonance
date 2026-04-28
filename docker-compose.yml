@@ -1,18 +1,70 @@
 version: '3.8'
 
+name: resonance
+
 services:
   postgres:
     image: postgres:15-alpine
     container_name: resonance-postgres
     environment:
-      POSTGRES_USER: res
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: resonance
+      POSTGRES_USER: ${DB_USERNAME:-res}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-pass}
+      POSTGRES_DB: ${POSTGRES_DB:-resonance}
+      POSTGRES_INITDB_ARGS: "-E UTF8 --locale=C"
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - resonance-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-res} -d ${POSTGRES_DB:-resonance}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: resonance-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-resonance}
+      DB_USERNAME: ${DB_USERNAME:-res}
+      DB_PASSWORD: ${DB_PASSWORD:-pass}
+
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-900000}
+      JWT_REFRESH_EXPIRATION: ${JWT_REFRESH_EXPIRATION:-604800000}
+      JWT_ISSUER: ${JWT_ISSUER:-resonance-api}
+      JWT_AUDIENCE: ${JWT_AUDIENCE:-resonance-client}
+
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
+
+      JAVA_OPTS: "-Xms512m -Xmx1024m -XX:+UseG1GC"
+    ports:
+      - "${APP_PORT:-8088}:8088"
+    networks:
+      - resonance-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8088/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+networks:
+  resonance-network:
+    driver: bridge
 
 volumes:
   postgres_data:
+    driver: local
+  pgadmin_data:
+    driver: local
