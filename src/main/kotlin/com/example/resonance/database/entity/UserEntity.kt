@@ -1,5 +1,6 @@
 package com.example.resonance.database.entity
 
+import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -23,7 +24,12 @@ data class UserEntity (
     var password: String,
 ) : AbstractEntity()
 
+@Schema(description = "Тип пользователя в системе")
 enum class UserType {
-    STUDENT, COMPANY
+    @Schema(description = "Студент - может подавать заявки на стажировки")
+    STUDENT,
+
+    @Schema(description = "Компания - может публиковать стажировки")
+    COMPANY
 }
 

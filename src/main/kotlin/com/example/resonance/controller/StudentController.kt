@@ -27,6 +27,7 @@ import com.example.resonance.service.SocialProfileService
 import com.example.resonance.service.SphereOfInterestService
 import com.example.resonance.service.StudentService
 import com.example.resonance.service.SubjectService
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import jakarta.validation.Valid
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.DeleteMapping

@@ -1,5 +1,6 @@
 package com.example.resonance.database.entity
 
+import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.JoinColumn
@@ -42,10 +43,20 @@ data class Activity(
     }
 }
 
+@Schema(description = "Типы активностей от компаний")
 enum class ActivityType {
-    INTERNSHIP,      // стажировка
-    CASECOMPETITION, // Кейс-чемпионат
-    CAREEREVENTS,    // Карьерные мероприятия
-    TRAININGEVENTS,  // Обучающие мероприятия
-    CONTEST,        // Конкурс
+    @Schema(description = "Стажировка")
+    INTERNSHIP,
+
+    @Schema(description = "Кейс-чемпионат")
+    CASECOMPETITION,
+
+    @Schema(description = "Карьерные мероприятия")
+    CAREEREVENTS,
+
+    @Schema(description = "Обучающие мероприятия")
+    TRAININGEVENTS,
+
+    @Schema(description = "Конкурс")
+    CONTEST
 }

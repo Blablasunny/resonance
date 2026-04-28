@@ -1,5 +1,6 @@
 package com.example.resonance.database.entity
 
+import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -35,9 +36,17 @@ data class Education(
     }
 }
 
+@Schema(description = "Уровень образования студента")
 enum class EducationLevel {
-    BACHELOR,     // Бакалавриат
-    MASTER,       // Магистратура
-    SPECIALIST,   // Специалитет
-    POSTGRADUATE, // Аспирантура
+    @Schema(description = "Бакалавриат")
+    BACHELOR,
+
+    @Schema(description = "Магистратура")
+    MASTER,
+
+    @Schema(description = "Специалитет")
+    SPECIALIST,
+
+    @Schema(description = "Аспирантура")
+    POSTGRADUATE
 }

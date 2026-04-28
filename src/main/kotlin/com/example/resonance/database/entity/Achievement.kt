@@ -1,5 +1,6 @@
 package com.example.resonance.database.entity
 
+import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.JoinColumn
@@ -40,14 +41,32 @@ data class Achievement(
     }
 }
 
+@Schema(description = "Типы достижений студентов")
 enum class AchievementType {
-    ARTICLE,         // Статья
-    OLYMPIAD,        // Олимпиада
-    CONFERENCE,      // Конференция
-    ACCELERATOR,     // Акселератор
-    STARTUP,         // Стартап
-    COURSE,          // Курс
-    CERTIFICATION,   // Курс повышения квалификации
-    VOLUNTEERING,    // Волонтерство
-    CASECOMPETITION, // Кейс-чемпионат
+    @Schema(description = "Публикация статьи")
+    ARTICLE,
+
+    @Schema(description = "Участие в олимпиаде")
+    OLYMPIAD,
+
+    @Schema(description = "Участие в конференции")
+    CONFERENCE,
+
+    @Schema(description = "Участие в акселераторе")
+    ACCELERATOR,
+
+    @Schema(description = "Собственный стартап")
+    STARTUP,
+
+    @Schema(description = "Пройденный курс")
+    COURSE,
+
+    @Schema(description = "Сертификация")
+    CERTIFICATION,
+
+    @Schema(description = "Волонтерство")
+    VOLUNTEERING,
+
+    @Schema(description = "Кейс-чемпионат")
+    CASECOMPETITION
 }

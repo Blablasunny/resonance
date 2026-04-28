@@ -1,5 +1,6 @@
 package com.example.resonance.database.entity
 
+import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -70,10 +71,29 @@ data class Student(
     }
 }
 
+@Schema(description = "Пол пользователя")
 enum class Gender {
-    FEMALE, MALE
+    @Schema(description = "Женский")
+    FEMALE,
+
+    @Schema(description = "Мужской")
+    MALE
 }
 
+@Schema(description = "Уровень профессионализма")
 enum class ProfessionGrade {
-    INTERN, JUNIOR, MIDDLE, SENIOR, TEAMLEAD
+    @Schema(description = "Стажер")
+    INTERN,
+
+    @Schema(description = "Младший специалист")
+    JUNIOR,
+
+    @Schema(description = "Средний уровень")
+    MIDDLE,
+
+    @Schema(description = "Старший специалист")
+    SENIOR,
+
+    @Schema(description = "Тимлид")
+    TEAMLEAD
 }

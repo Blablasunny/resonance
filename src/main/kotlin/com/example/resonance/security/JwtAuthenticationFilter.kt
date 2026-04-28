@@ -29,7 +29,10 @@ class JwtAuthenticationFilter(
         val path = request.requestURI
         if (path.startsWith("/actuator/health") ||
             path.startsWith("/actuator/info") ||
-            path.startsWith("/auth/")) {
+            path.startsWith("/swagger-ui") ||
+            path.startsWith("/v3/api-docs") ||
+            path.startsWith("/swagger-resources") ||
+            path.startsWith("/webjars")) {
             filterChain.doFilter(request, response)
             return
         }
